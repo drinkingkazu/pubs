@@ -72,7 +72,11 @@ for filenames in _chunk(list_o_files, 100):
         else:
             run_type='unknown'
 
-        new_md = { 'file_name' : in_file, 'runs' : copy.deepcopy(md['runs']) }
+        if md['runs'][0][0]>3000:
+            new_md = { 'file_name' : in_file, 'file_format': "binaryraw-compressed", 'runs' : copy.deepcopy(md['runs']) }
+        else:
+            new_md = { 'file_name' : in_file, 'runs' : copy.deepcopy(md['runs']) }
+        
         if new_md['runs']:
             for run in new_md['runs']:
                 run[2]=run_type
@@ -81,7 +85,7 @@ for filenames in _chunk(list_o_files, 100):
     if new_mdlist:
         print new_mdlist
         # This should be a proper api call, but currently it isn't
-        #samweb.putURL('/files', params={'continue_on_error': 0}, data=json.dumps(new_mdlist), content_type='application/json', secure=True, role='*')
+        samweb.putURL('/files', params={'continue_on_error': 0}, data=json.dumps(new_mdlist), content_type='application/json', secure=True, role='*')
 
 print("Finished processing files for this query: %s" % file_query)
 
