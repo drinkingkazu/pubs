@@ -117,7 +117,118 @@ html.write(
 </table>
 ''')
 
-# Generate progress for swizzling.
+# Generate progress for open trigger swizzling.
+
+project = 'prod_swizzle_filter_run1_open_v4'
+prjdict = dbi.list_xstatus(bad_runs, project)
+n1 = 0
+n2 = 0
+n3 = 0
+n4 = 0
+for status, num in prjdict[project]:
+    if status == 10:
+        n1 += num
+    elif status >=2 and status <= 9:
+        n2 += num
+    elif status == 1:
+        n3 += num
+    elif status >= 1000:
+        n4 += num
+ntot = n1 + n2 + n3 + n4
+s1 = int(500. * float(n1) / float(ntot))
+s2 = int(500. * float(n2) / float(ntot))
+s3 = int(500. * float(n3) / float(ntot))
+s4 = int(500. * float(n4) / float(ntot))
+stot = s1 + s2 + s3 + s4
+
+html.write(
+'''<table border bgcolor=#ffffe0>
+<caption><strong>Open Trigger Swizzling</strong></caption>
+<tr bgcolor=#ffffe0>
+''')
+html.write('<td nowrap>Swizzling</td>\n')
+html.write('<td nowrap align=left>')
+if s1 != 0:
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+if s2 != 0:
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+if s3 != 0:
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+if s4 != 0:
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+html.write('</td>\n')
+html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot, 
+                                                                         100.*float(n1)/float(ntot),
+                                                                         100.*float(n4)/float(ntot)))
+html.write(
+'''</td>
+</tr>
+''')
+
+# Merging
+
+streams = [('prod_swizzle_merge_bnb_run1_open_v4', 'Merge BNB'),
+           ('prod_swizzle_merge_ext_bnb_run1_open_v4', 'Merge BNB External'),
+           ('prod_swizzle_merge_bnb_unbiased_run1_open_v4', 'Merge BNB Unbiased'),
+           ('prod_swizzle_merge_numi_run1_open_v4', 'Merge NUMI'),
+           ('prod_swizzle_merge_ext_numi_run1_open_v4', 'Merge NUMI External'),
+           ('prod_swizzle_merge_numi_unbiased_run1_open_v4', 'Merge NUMI Unbiased'),
+           ('prod_swizzle_merge_ext_unbiased_run1_open_v4', 'Merge External Unbiased'),
+           ('prod_swizzle_merge_mucs_run1_open_v4', 'Merge MuCS'),
+           ('prod_swizzle_merge_notpc_run1_open_v4', 'Merge NoTPC')]
+
+
+for stream in streams:
+    project = stream[0]
+    name = stream[1]
+    prjdict = dbi.list_xstatus(bad_runs, project)
+    n1 = 0
+    n2 = 0
+    n3 = 0
+    n4 = 0
+    n5 = 0
+    for status, num in prjdict[project]:
+        if status == 10:
+            n1 += num
+        if status == 100:
+            n2 += num
+        elif status >=2 and status <= 9:
+            n3 += num
+        elif status == 1:
+            n4 += num
+        elif status >= 1000:
+            n5 += num
+    ntot = n1 + n2 + n3 + n4 + n5
+    s1 = int(500. * float(n1) / float(ntot))
+    s2 = int(500. * float(n2) / float(ntot))
+    s3 = int(500. * float(n3) / float(ntot))
+    s4 = int(500. * float(n4) / float(ntot))
+    s5 = int(500. * float(n5) / float(ntot))
+    stot = s1 + s2 + s3 + s4 + s5
+
+    html.write('<tr bgcolor=#ffffe0>\n')
+    html.write('<td nowrap>%s</td>\n' % name)
+    html.write('<td nowrap align=left>')
+    if s1 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+    if s2 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green.gif height=13 width=%d>' % s2)
+    if s3 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s3)
+    if s4 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
+    if s5 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
+    html.write('</td>\n')
+    html.write('<td nowrap>%d / %d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, n1 + n2, ntot, 
+                                                                                  100.*float(n1+n2)/float(ntot),
+                                                                                  100.*float(n5)/float(ntot)))
+    html.write('</tr>\n')
+
+html.write('</table>\n')
+
+
+# Generate progress for software trigger swizzling.
 
 project = 'prod_swizzle_filter_v3'
 prjdict = dbi.list_xstatus(bad_runs, project)
@@ -128,7 +239,7 @@ n4 = 0
 for status, num in prjdict[project]:
     if status == 10:
         n1 += num
-    elif status >=2 and status <= 6:
+    elif status >=2 and status <= 9:
         n2 += num
     elif status == 1:
         n3 += num

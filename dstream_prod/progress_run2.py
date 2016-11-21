@@ -7,7 +7,7 @@ import subprocess
 from dstream.ds_api import ds_reader
 from pub_dbi import pubdb_conn_info
 
-bad_runs = []
+bad_runs = [8494, 8501, 8523, 8524, 8527, 8569, 8575]
 
 # DB connection.
 
@@ -118,21 +118,25 @@ n1 = 0
 n2 = 0
 n3 = 0
 n4 = 0
+n5 = 0
 for status, num in prjdict[project]:
     if status == 10:
         n1 += num
     elif status >=2 and status <= 6:
         n2 += num
-    elif status == 1:
+    elif status >=7 and status <= 9:
         n3 += num
-    elif status >= 1000:
+    elif status == 1:
         n4 += num
-ntot = n1 + n2 + n3 + n4
+    elif status >= 1000:
+        n5 += num
+ntot = n1 + n2 + n3 + n4 + n5
 s1 = int(500. * float(n1) / float(ntot))
 s2 = int(500. * float(n2) / float(ntot))
 s3 = int(500. * float(n3) / float(ntot))
 s4 = int(500. * float(n4) / float(ntot))
-stot = s1 + s2 + s3 + s4
+s5 = int(500. * float(n5) / float(ntot))
+stot = s1 + s2 + s3 + s4 + s5
 
 html.write(
 '''<table border bgcolor=#ffffe0>
@@ -146,13 +150,15 @@ if s1 != 0:
 if s2 != 0:
     html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
 if s3 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s3)
 if s4 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
+if s5 != 0:
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
 html.write('</td>\n')
 html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot, 
                                                                          100.*float(n1)/float(ntot),
-                                                                         100.*float(n4)/float(ntot)))
+                                                                         100.*float(n5)/float(ntot)))
 html.write(
 '''</td>
 </tr>
@@ -192,6 +198,8 @@ for stream in streams:
         elif status >= 1000:
             n5 += num
     ntot = n1 + n2 + n3 + n4 + n5
+    print project
+    print n1, n2, n3, n4, n5
     s1 = int(500. * float(n1) / float(ntot))
     s2 = int(500. * float(n2) / float(ntot))
     s3 = int(500. * float(n3) / float(ntot))
@@ -229,21 +237,25 @@ n1 = 0
 n2 = 0
 n3 = 0
 n4 = 0
+n5 = 0
 for status, num in prjdict[project]:
     if status == 10:
         n1 += num
     elif status >=2 and status <= 6:
         n2 += num
-    elif status == 1:
+    elif status >=7 and status <= 9:
         n3 += num
-    elif status >= 1000:
+    elif status == 1:
         n4 += num
-ntot = n1 + n2 + n3 + n4
+    elif status >= 1000:
+        n5 += num
+ntot = n1 + n2 + n3 + n4 + n5
 s1 = int(500. * float(n1) / float(ntot))
 s2 = int(500. * float(n2) / float(ntot))
 s3 = int(500. * float(n3) / float(ntot))
 s4 = int(500. * float(n4) / float(ntot))
-stot = s1 + s2 + s3 + s4
+s5 = int(500. * float(n5) / float(ntot))
+stot = s1 + s2 + s3 + s4 + s5
 
 html.write(
 '''<table border bgcolor=#ffffe0>
@@ -257,13 +269,15 @@ if s1 != 0:
 if s2 != 0:
     html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
 if s3 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s3)
 if s4 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
+if s5 != 0:
+    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
 html.write('</td>\n')
 html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot, 
                                                                          100.*float(n1)/float(ntot),
-                                                                         100.*float(n4)/float(ntot)))
+                                                                         100.*float(n5)/float(ntot)))
 html.write(
 '''</td>
 </tr>
@@ -410,6 +424,68 @@ for stream in streams:
     html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
                                                                              100.*float(n1)/float(ntot+1.e-6),
                                                                              100.*float(n6)/float(ntot+1.e-6)))
+    html.write('</tr>\n')
+
+html.write('</table>\n')
+
+# Generate progress for analysis tree.
+
+html.write(
+'''<table border bgcolor=#ffffe0>
+<caption><strong>Analysis Tree</strong></caption>
+''')
+
+streams = [(['prod_anatree_bnb_run2_v6'], 'BNB'),
+           (['prod_anatree_ext_bnb_run2_v6'], 'BNB External'),
+           (['prod_anatree_bnb_unbiased_run2_v6'], 'BNB Unbiased'),
+           (['prod_anatree_numi_run2_v6'], 'NUMI'),
+           (['prod_anatree_ext_numi_run2_v6'], 'NUMI External'),
+           (['prod_anatree_numi_unbiased_run2_v6'], 'NUMI Unbiased'),
+           (['prod_anatree_ext_unbiased_run2_v6'], 'External Unbiased'),
+           (['prod_anatree_mucs_run2_v6'], 'MuCS')]
+
+for stream in streams:
+    projects = stream[0]
+    name = stream[1]
+    n1 = 0
+    n2 = 0
+    n3 = 0
+    n4 = 0
+    for project in projects:
+        prjdict = dbi.list_xstatus(bad_runs, project)
+        #if not prjdict.has_key(project):
+        #    continue
+        for status, num in prjdict[project]:
+            if status == 10:
+                n1 += num
+            elif status >=2 and status <= 9:
+                n2 += num
+            elif status == 1:
+                n3 += num
+            elif status >= 1000:
+                n4 += num
+    ntot = n1 + n2 + n3 + n4
+    s1 = int(500. * float(n1) / float(max(1, ntot)))
+    s2 = int(500. * float(n2) / float(max(1, ntot)))
+    s3 = int(500. * float(n3) / float(max(1, ntot)))
+    s4 = int(500. * float(n4) / float(max(1, ntot)))
+    stot = s1 + s2 + s3 + s4
+
+    html.write('<tr bgcolor=#ffffe0>\n')
+    html.write('<td nowrap>%s</td>\n' % name)
+    html.write('<td nowrap align=left>')
+    if s1 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+    if s2 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+    if s3 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+    if s4 != 0:
+        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+    html.write('</td>\n')
+    html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
+                                                                             100.*float(n1)/float(max(1, ntot)),
+                                                                             100.*float(n4)/float(max(1, ntot))))
     html.write('</tr>\n')
 
 html.write('</table>\n')
