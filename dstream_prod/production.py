@@ -19,6 +19,7 @@ from dstream import ds_status
 # From larbatch
 import project
 import project_utilities
+import larbatch_posix
 from project_modules.pubsdeadenderror import PubsDeadEndError
 from project_modules.pubsinputerror import PubsInputError
 
@@ -715,7 +716,7 @@ class production(ds_project_base):
 
         nout = 0
         nlog = 0
-        for path, subdirs, files in os.walk(stobj.outdir):
+        for path, subdirs, files in larbatch_posix.walk(stobj.outdir):
             #self.debug(path)
             dname = path.split('/')[-1]
             if not len(dname.split('_'))==2 or not dname.split('_')[0].isdigit() or not dname.split('_')[1].isdigit():
@@ -726,7 +727,7 @@ class production(ds_project_base):
                 self.info('Deleting extra output directory %s' % path)
                 shutil.rmtree(path)
                 nout -= 1
-        for path, subdirs, files in os.walk(stobj.logdir):
+        for path, subdirs, files in larbatch_posix.walk(stobj.logdir):
             #self.debug(path)
             dname = path.split('/')[-1]
             if not len(dname.split('_'))==2 or not dname.split('_')[0].isdigit() or not dname.split('_')[1].isdigit():

@@ -39,6 +39,14 @@ case $1 in
 	kill $proc;
     fi
     ;;
+    (kill)
+    if [[ -z $proc ]]; then
+	echo daemon is not running...;
+    else
+	echo stopping daemon;
+	kill -9 $proc;
+    fi
+    ;;
     (restart)
     if [[ $proc ]]; then
 	echo restarting daemon;
