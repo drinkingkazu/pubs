@@ -57,6 +57,11 @@ export PUB_DAEMON_LOG_MODULE=""
 export PUB_DAEMON_HANDLER_MODULE=""
 
 #
+# Larbatch configuration.
+#
+#export LARBATCH_DEBUG=1
+
+#
 # Server-specific configuration
 #
 case `uname -n` in
@@ -75,29 +80,39 @@ case `uname -n` in
 	#setup uboonecode v04_26_03_02 -q e7:prof
 	case `uname -n` in
 	    (uboonegpvm01*)
-	        setup uboonecode v05_08_00_02 -q e9:prof
-                setup larbatch v01_21_05
+	        setup uboonecode v05_08_00_05 -q e9:prof
+                #setup larbatch v01_21_05
+                #setup larbatch v01_23_07
+                setup ubutil v06_16_00 -q e10:prof
 		;;
 	    (uboonegpvm02*)
-	        setup uboonecode v05_08_00_02 -q e9:prof
-                setup larbatch v01_21_05
+	        setup uboonecode v05_08_00_05 -q e9:prof
+                #setup larbatch v01_21_05
+                #setup larbatch v01_23_07
+                setup ubutil v06_16_00 -q e10:prof
 		;;
 	    (uboonegpvm03*)
 	        setup uboonecode v05_08_00_01 -q e9:prof
-                setup larbatch v01_21_05
+                #setup larbatch v01_21_05
+                setup larbatch v01_23_07
 		;;
 	    (uboonegpvm04*)
 	        #setup uboonecode v04_26_04_09 -q e7:prof
 	        setup uboonecode v05_08_00_03 -q e9:prof
-                setup larbatch v01_23_03
+                #setup larbatch v01_23_03
+                #setup larbatch v01_23_07
+                setup ubutil v06_16_00 -q e10:prof
 		;;
 	    (uboonegpvm05*)
-	        setup uboonecode v05_08_00_02 -q e9:prof
-                setup larbatch v01_21_05
+	        setup uboonecode v05_08_00_05 -q e9:prof
+                #setup larbatch v01_21_05
+                #setup larbatch v01_23_07
+                setup ubutil v06_16_00 -q e10:prof
 		;;
 	    (uboonegpvm06*)
-	        setup uboonecode v04_36_00_01 -q e9:prof
-                setup larbatch v01_21_05
+	        setup uboonecode v05_08_00_06 -q e9:prof
+                #setup larbatch v01_23_06
+                setup ubutil v06_16_00 -q e10:prof
 		;;
             (uboonegpvm07*)
                 #setup uboonecode v05_11_01 -q e9:prof

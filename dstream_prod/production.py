@@ -19,6 +19,7 @@ from dstream import ds_status
 # From larbatch
 import project
 import project_utilities
+import larbatch_posix
 from project_modules.pubsdeadenderror import PubsDeadEndError
 from project_modules.pubsinputerror import PubsInputError
 
@@ -393,6 +394,7 @@ class production(ds_project_base):
         self.info('Checking input readiness for run %d, subrun %d' % (run,subrun))
 
         xml = self.getXML(run)
+        self.info('XML = %s' % xml)
 
         # First check if we are reading files from sam.
 
@@ -439,6 +441,7 @@ class production(ds_project_base):
         
         # Report starting
         self.info('Submit run %d, subruns %s' % (run, str(subruns)))
+        self.info('XML = %s' % self.getXML(run))
         self._data = str( self._data )
 
         # Main command
@@ -670,6 +673,7 @@ class production(ds_project_base):
 
     def check( self, statusCode, istage, run, subrun ):
         self.info('Check run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
         self._data = str( self._data )
         nSubmit     = None
 
@@ -712,7 +716,7 @@ class production(ds_project_base):
 
         nout = 0
         nlog = 0
-        for path, subdirs, files in os.walk(stobj.outdir):
+        for path, subdirs, files in larbatch_posix.walk(stobj.outdir):
             #self.debug(path)
             dname = path.split('/')[-1]
             if not len(dname.split('_'))==2 or not dname.split('_')[0].isdigit() or not dname.split('_')[1].isdigit():
@@ -723,7 +727,7 @@ class production(ds_project_base):
                 self.info('Deleting extra output directory %s' % path)
                 shutil.rmtree(path)
                 nout -= 1
-        for path, subdirs, files in os.walk(stobj.logdir):
+        for path, subdirs, files in larbatch_posix.walk(stobj.logdir):
             #self.debug(path)
             dname = path.split('/')[-1]
             if not len(dname.split('_'))==2 or not dname.split('_')[0].isdigit() or not dname.split('_')[1].isdigit():
@@ -825,6 +829,7 @@ Job IDs    : %s
                              
         # Report starting
         self.info('Recover run %d, subruns %s' % (run, str(subruns)))
+        self.info('XML = %s' % self.getXML(run))
         self._data = str( self._data )
 
         # Main command
@@ -970,6 +975,7 @@ Job IDs    : %s
     def declare( self, statusCode, istage, run, subrun ):
 
         self.info('Declare run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
 
         # Get stage name.
         stage = self._digit_to_name[istage]
@@ -1080,6 +1086,9 @@ Job IDs    : %s
             statusCode = self.kSTORED
             return statusCode + istage
 
+        self.info('Store run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
+
         # Get stage name.
         stage = self._digit_to_name[istage]
 
@@ -1177,6 +1186,7 @@ Job IDs    : %s
 
     def check_location( self, statusCode, istage, run, subrun ):
         self.info('Check location for run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
 
         # Check store flag.
 
