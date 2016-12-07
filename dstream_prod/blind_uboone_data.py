@@ -46,7 +46,7 @@ except:
 
 if len(sys.argv)<3 :
     print("\nMissing the needed input variables for blinding of data!!!\n")
-    print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
+    print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree|test> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
     print("You have to give a lower limit to the files you want to blind, and possibly an upper limit.")
     print("The fraction_for_unblind is an optional integer percentage to leave unblind.")
     print("Files marked with ub_blinding.processed: true with only be processed if you set [reprocess_old_files] to true.")
@@ -54,7 +54,7 @@ if len(sys.argv)<3 :
 
 if len(sys.argv)>6 :
     print("\nMissing the needed input variables for blinding of data!!!\n")
-    print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
+    print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree|test> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
     print("You have to give a lower limit to the files you want to blind, and possibly an upper limit. upper limit is not included!")
     print("The last fraction is what percentage to leave open one is optional.")
     print("Files marked with ub_blinding.processed: true with only be processed if you set [reprocess_old_files] to true.")
@@ -62,6 +62,7 @@ if len(sys.argv)>6 :
 
 unblinding_fraction=0
 reprocess_old_files=False
+debug_dataset=False
 
 data_tier=str(sys.argv[1])
 lower_run_limit=int(sys.argv[2])
@@ -74,7 +75,7 @@ if len(sys.argv)>3 :
     list_o_runs = range(lower_run_limit,upper_run_limit)
     if len(list_o_runs)<1:
         print("\n The lower and upper run limits given didn't produce any runs to process.\n")
-        print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
+        print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree|test> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
         exit(1)
 
 if len(sys.argv)>4 :
@@ -100,35 +101,36 @@ if data_tier=="binary" :
         raise Exception('Unable to get list of files for this query:' + query)
     check_file_age=True
 elif data_tier=="swizzled" :
-    query = run_limit_str + " and file_type data and data_tier raw and file_format artroot and data_stream outbnb% and file_name Phys% "
+    query = run_limit_str + " and file_type data and data_tier raw and file_format artroot and data_stream outbnb% and file_name Phys%" + open_run_list
     try:
         list_o_files=samweb.listFiles(query)
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="reco" :
-    query = run_limit_str + " and file_type data and data_tier reco% and file_format artroot and file_name Phys% and ub_project.name reco_outbnb%"
+    query = run_limit_str + " and file_type data and data_tier reco% and file_format artroot and file_name Phys% and ub_project.name reco_outbnb%" + open_run_list
     try:
         list_o_files=samweb.listFiles(query)
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="anatree" :
-    query = run_limit_str + " and file_type data and data_tier root-tuple and file_name ana% and ub_project.name anatree_outbnb%"
+    query = run_limit_str + " and file_type data and data_tier root-tuple and file_name ana% and ub_project.name anatree_outbnb% and ischildof: (file_name Phys%)" + open_run_list
     try:
         list_o_files=samweb.listFiles(query)
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="test" :
-    query = run_limit_str + " and file_name BeamOffRun-2016_5_11_8_8_51-0006268-00008.ubdaq"
+    query = run_limit_str + " and file_type data and data_tier raw and file_format binary% and file_name BeamOffRun-2016_5_11_8_8_51-0006268-00008.ubdaq" + open_run_list
+    debug_dataset=True
     try:
         list_o_files=samweb.listFiles(query)
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 else :
-    print("listed data tier doesn't match binary|swizzled|reco|anatree!!!!!!")
+    print("listed data tier doesn't match binary|swizzled|reco|anatree|test!!!")
     exit(1)
 
 if len(list_o_files)<1:
-    print("\nThere were no files found matching that query!")
+    print("\nThere were no files found matching that query! That's no necessarily bad...\n")
     print("Finished processing files for this query: %s" % query)
     exit(1)
 
@@ -148,6 +150,12 @@ for filenames in _chunk(list_o_files, 100):
             raise Exception('No location available for file: '+in_file)
 
         file_full_path_tmp=(location[0]['full_path'].split(":"))[1]+"/"+in_file
+        if debug_dataset :
+            print("Only running in debug method")
+            print("The location from was: "+file_full_path_tmp)
+            print("Skipping this file and not modifying the metadata.")
+            continue
+        
         if not (os.path.exists(file_full_path_tmp)) :
             print("The file location return from SAM doesn't exist on this machine!!!")
             print("The location from was: "+file_full_path_tmp)
@@ -166,9 +174,14 @@ for filenames in _chunk(list_o_files, 100):
         if (random.uniform(0.00000001,100)<unblinding_fraction) :
             cmd = "chmod 0644 " + file_full_path_tmp
 
-            print("I would change that file to be NOT-BLIND.")
-            print("Would execute this command: " + cmd)
-                  
+            if debug_dataset :
+                print("Only running in debug method")
+                print("I would change that file to be NOT-BLIND.")
+                print("Would execute this command: " + cmd)
+                print("The location from was: "+file_full_path_tmp)
+                print("Skipping this file and not modifying the metadata.")
+                continue
+
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout.readlines():
                 print line,
@@ -182,8 +195,13 @@ for filenames in _chunk(list_o_files, 100):
         else:
             cmd = "chmod 0600 " + file_full_path_tmp
 
-            print("I would change that file to be BLIND.")
-            print("Would execute this command: " + cmd)
+            if debug_dataset :
+                print("Only running in debug method")
+                print("I would change that file to be BLIND.")
+                print("Would execute this command: " + cmd)
+                print("The location from was: "+file_full_path_tmp)
+                print("Skipping this file and not modifying the metadata.")
+                continue
 
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in p.stdout.readlines():
@@ -200,7 +218,10 @@ for filenames in _chunk(list_o_files, 100):
         print new_mdlist
         # This should be a proper api call, but currently it isn't
         try:
-            samweb.putURL('/files', params={'continue_on_error': 0}, data=json.dumps(new_mdlist), content_type='application/json', secure=True, role='*')
+            if not debug_dataset :
+                samweb.putURL('/files', params={'continue_on_error': 0}, data=json.dumps(new_mdlist), content_type='application/json', secure=True, role='*')
+            else:
+                print("Not changing metadata since this is debug mode")
         except:
             print("\nThere was an error trying to access the ")
             print("You probably don't have a proxy available!!!")
