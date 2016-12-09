@@ -77,7 +77,7 @@ run_limit_str = " run_number >= " + str(lower_run_limit) + " "
 if len(sys.argv)>3 :
     upper_run_limit=int(sys.argv[3])
     run_limit_str = run_limit_str + "and run_number <= " + str(upper_run_limit) + " "
-    list_o_runs = range(lower_run_limit,upper_run_limit)
+    list_o_runs = range(lower_run_limit,upper_run_limit+1)
     if len(list_o_runs)<1:
         print("\n The lower and upper run limits given didn't produce any runs to process.\n")
         print("Usage: blind_uboone_data.py <binary|swizzled|reco|anatree|test> <lower_run_limit> [upper_run_limit] [fraction_for_unblind] [reprocess_old_files]\n")
@@ -112,19 +112,19 @@ elif data_tier=="swizzled" :
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="reco" :
-    query = run_limit_str + " and file_type data and data_tier reco% and file_format artroot and file_name Phys% and ub_project.name reco_outbnb%" + open_run_list
+    query = run_limit_str + " and file_type data and data_tier reco% and file_format artroot and file_name Phys% and ub_project.name %reco_outbnb%" + open_run_list
     try:
         list_o_files=samweb.listFiles(query)
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="anatree" :
-    query = run_limit_str + " and file_type data and data_tier root-tuple and file_name ana% and ub_project.name anatree_outbnb% and ischildof: (file_name Phys%)" + open_run_list
+    query = run_limit_str + " and file_type data and data_tier root-tuple and file_name ana% and ub_project.name %anatree_outbnb% and ischildof: (file_name Phys%)" + open_run_list
     try:
         list_o_files=samweb.listFiles(query)
     except:
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="test" :
-    query = run_limit_str + " and file_type data and data_tier raw and file_format binary% " + open_run_list
+    query = run_limit_str + " and file_type data and data_tier root-tuple and file_format file_name ana% " + open_run_list
     debug_dataset=True
     try:
         list_o_files=samweb.listFiles(query)
@@ -139,7 +139,7 @@ if len(list_o_files)<1:
     print("Finished processing files for this query: %s" % query)
     exit(1)
 
-for filenames in _chunk(list_o_files, 100):
+for filenames in _chunk(list_o_files, 50):
     
     mdlist = samweb.getMultipleMetadata(filenames)
     new_mdlist = []
@@ -150,7 +150,8 @@ for filenames in _chunk(list_o_files, 100):
             continue
         in_file = md['file_name']
         try:
-            location=samweb.locateFile(in_file)
+            locations=samweb.locateFile(in_file)
+            location=[ loc['location'] for loc in locations if loc['full_path'].startswith('enstore') ][0]
         except:
             raise Exception('No location available for file: '+in_file)
 
