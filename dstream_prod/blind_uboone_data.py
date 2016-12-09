@@ -155,7 +155,7 @@ for filenames in _chunk(list_o_files, 50):
         except:
             raise Exception('No location available for file: '+in_file)
 
-        file_full_path_tmp=(location[0]['full_path'].split(":"))[1]+"/"+in_file
+        file_full_path_tmp=((location.split(":"))[1].split("("))[0]+"/"+in_file
         if debug_dataset :
             print("Only running in debug method")
             print("The location from was: "+file_full_path_tmp)
