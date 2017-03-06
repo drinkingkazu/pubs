@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<!-- Production Project -->
+
+<!DOCTYPE project [
+<!ENTITY relsim "v05_15_00">
+<!ENTITY relreco1 "v05_15_00">
+<!ENTITY relreco2 "v05_15_00">
+<!ENTITY file_type "mc">
+<!ENTITY run_type "physics">
+<!ENTITY name "prodcosmics_corsika_cmc_uboone_validate">
+<!ENTITY tag "prod_test_multistage">
+<!ENTITY prod_mode "prod_test_multistage">
+]>
+
+<job>
+
+<project name="&name;">
+
+  <!-- Project size -->
+  <numevents>50</numevents>
+
+  <!-- Operating System -->
+  <os>SL6</os>
+  
+  <!-- Project Version -->
+  <version>&prod_mode;_v05_15_00</version>  
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <tag>&relsim;</tag>
+    <qual>e9:prof</qual>
+    <local>/uboone/app/users/uboonepro/larbatch_test/local.tar</local>
+  </larsoft>
+  
+
+  <!-- Worker Node Validation -->
+  <check>1</check> 
+  <copy>0</copy>
+
+  <!-- Project stages -->
+
+  <stage name="sim">
+    <fcl>prodcosmics_corsika_cmc_uboone.fcl</fcl>
+    <fcl>standard_g4_uboone.fcl</fcl>
+    <fcl>standard_detsim_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/&relsim;/sim/&name;</outdir>
+    <logdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/&relsim;/sim/&name;</logdir>
+    <workdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/work/&relsim;/sim/&name;</workdir>
+    <output>prodcosmics_corsika_cmc_uboone_${PROCESS}_%tc_gen.root</output>
+    <numjobs>1</numjobs>
+    <datatier>generated</datatier>
+    <defname>&name;_&tag;_uboonepro_multitest</defname>
+    <resource>DEDICATED,OPPORTUNISTIC</resource>
+    <jobsub>--expected-lifetime=short --memory=4000MB  -e UPS_OVERRIDE="-H Linux64bit+2.6-2.12"</jobsub>
+    <maxfilesperjob>1</maxfilesperjob>
+  </stage>
+
+  <stage name="reco">
+    <fcl>reco_uboone_mcc7_driver_stage1.fcl</fcl>
+    <fcl>reco_uboone_mcc7_driver_stage2.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/&relsim;/reco/&name;</outdir>
+    <logdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/&relsim;/reco/&name;</logdir>
+    <workdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/work/&relsim;/reco/&name;</workdir>
+    <numjobs>1</numjobs>
+    <datatier>reconstructed</datatier>
+    <defname>&name;_&tag;_uboonepro_multitest</defname>
+    <resource>DEDICATED,OPPORTUNISTIC</resource>
+    <jobsub>--expected-lifetime=24h --memory=4000MB  -e UPS_OVERRIDE="-H Linux64bit+2.6-2.12"</jobsub>
+    <maxfilesperjob>1</maxfilesperjob>
+  </stage>
+  
+
+  
+  <!-- file type -->
+  <filetype>&file_type;</filetype>
+
+  <!-- run type -->
+  <runtype>&run_type;</runtype>
+
+</project>
+
+<project name="&name;_reco2">
+
+  <!-- Project size -->
+  <numevents>20</numevents>
+
+  <!-- Operating System -->
+  <os>SL6</os>
+
+  <!-- Batch resources -->
+  <resource>DEDICATED,OPPORTUNISTIC</resource>
+  
+  <!-- Project Version -->
+  <version>&prod_mode;_v04_36_00</version>
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <tag>&relreco2;</tag>
+    <qual>e9:prof</qual>
+  </larsoft>
+  
+  <!-- Worker Node Validation -->
+  <check>0</check> 
+  
+  <stage name="mergeana">
+    <fcl>standard_ana_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/&relsim;/mergeana/&name;</outdir>
+    <logdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/&relsim;/mergeana/&name;</logdir>
+    <workdir>/pnfs/uboone/scratch/users/uboonepro/&tag;/work/&relsim;/mergeana/&name;</workdir>
+    <numjobs>1</numjobs>
+    <datatier>reconstructed</datatier>
+    <anadatatier>root-tuple</anadatatier>
+    <defname>&name;_&tag;</defname>
+    <anadefname>&name;_&tag;_ana</anadefname>
+  </stage>
+  
+  <!-- file type -->
+  <filetype>&file_type;</filetype>
+
+  <!-- run type -->
+  <runtype>&run_type;</runtype>
+
+</project>
+
+
+</job>
