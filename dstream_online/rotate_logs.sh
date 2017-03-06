@@ -15,7 +15,9 @@ do
     dest=${logdir}`basename ${log}.${now}`
     mv -f ${log} ${dest}
     tar czf ${dest}.tgz ${dest}
+    mkdir $logdir/log_$now
     if [ -e "${dest}.tgz" ] ; then
+	mv ${dest}.tgz $logdir/log_$now
 	rm -f ${dest}
 	rm -f ${log}
     else
