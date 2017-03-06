@@ -70,23 +70,43 @@ html.write('<caption><strong>Daemons</strong></caption>')
 for daemon in daemons:
     color = 'black'
     status = 'Unknown'
-    command = ['ssh', daemon, 'ps', 'aux']
-    try:
-        lines = subprocess.check_output(command).splitlines()
-        color = 'red'
-        status = 'Stopped'
-        for line in lines:
-            if line.find('python') >= 0 and line.find('daemon.py') >= 0:
-                status = 'Running'
-                color = 'green'
-    except:
-        color = 'black'
-        status = 'Unknown'
+
+    # Check if daemon is exists.
+
+    if dbi.daemon_exist(daemon):
+
+        # Check if daemon is enabled.
+
+        if not dbi.daemon_info(daemon)._enable:
+
+            # Daemon is disabled.
+
+            color = 'blue'
+            status = 'Disabled'
+
+        else:
+
+            # Daemon is enabled.
+            # Check if daemon is running.
+
+            command = ['ssh', daemon, 'ps', 'aux']
+            try:
+                lines = subprocess.check_output(command).splitlines()
+                color = 'red'
+                status = 'Stopped'
+                for line in lines:
+                    if line.find('python') >= 0 and line.find('daemon.py') >= 0:
+                        status = 'Running'
+                        color = 'green'
+            except:
+                color = 'black'
+                status = 'Unknown'
 
     html.write('<tr bgcolor=#ffffe0>\n')
     html.write('<td>%s</td>\n' % daemon)
     html.write('<td><font color="%s">%s</font></td>\n' % (color, status))
     html.write('</tr>\n')
+html.write('<tr><td colspan=2><a href=http://www-microboone.fnal.gov/at_work/AnalysisTools/logcheck.txt>Check logs</a></td></tr>')
 html.write('</table>\n')
 
 # Generate legend.

@@ -37,6 +37,9 @@
   <!-- Run Number -->
   <runnumber>REP_RUN_NUMBER</runnumber>
 
+  <!-- Validate on worker -->
+  <check>1</check>
+
   <!-- Project stages -->
 
   <stage name="reco1">
@@ -45,11 +48,12 @@
     <outdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</logdir>
     <workdir>/pnfs/uboone/scratch/uboonepro/work/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</bookdir>
     <numjobs>100</numjobs>
     <datatier>reconstructed-2d</datatier>
     <defname>&prod_mode;_reco1_PUBS_XMLVAR_INPUT_STREAM_&prod_version;_&run_tag;</defname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
-    <jobsub>--expected-lifetime=long</jobsub>
+    <jobsub>--expected-lifetime=long --subgroup=prod --subgroup=prod</jobsub>
   </stage>
 
   <stage name="reco2">
@@ -57,11 +61,12 @@
     <outdir>/pnfs/uboone/scratch/uboonepro/reco2/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/reco2/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</logdir>
     <workdir>/pnfs/uboone/scratch/uboonepro/work/reco2/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/reco2/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</bookdir>
     <numjobs>100</numjobs>
     <datatier>reconstructed</datatier>
     <defname>&prod_mode;_reco2_PUBS_XMLVAR_INPUT_STREAM_&prod_version;_&run_tag;</defname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
-    <jobsub>--expected-lifetime=long</jobsub>
+    <jobsub>--expected-lifetime=long --subgroup=prod --subgroup=prod</jobsub>
   </stage>
 
   <!-- file type -->

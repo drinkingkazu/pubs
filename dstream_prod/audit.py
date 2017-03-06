@@ -14,17 +14,20 @@
 #
 # Options:
 #
-# --project <project> - Specify pubs project name.
-# --pattern <pattern> - Specify pubs project pattern, which will be 
-# --run <run>         - Run number to audit.
-# --minrun <run>      - Minimum run number to audit.
-# --maxrun <run>      - Maximum run number to audit.
-#                       matched against existing pubs projects.
-# --all               - If specified, select all pubs projects (otherwise
-#                       only select enabled projects).
-# --quick             - If specified, skip auditing completed subruns.
-# --fix               - Fix problems (see below).
-# --big               - Flag files with more than 100 events.
+# --project <project>  - Specify pubs project name.
+# --pattern <pattern>  - Specify pubs project pattern, which will be 
+# --run <run>          - Run number to audit.
+# --minrun <run>       - Minimum run number to audit.
+# --maxrun <run>       - Maximum run number to audit.
+#                        matched against existing pubs projects.
+# --status <status>    - Only check the specified status.
+# --minstatus <status> - Minimum status to check.
+# --maxstatus <status> - Maximum status to check.
+# --all                - If specified, select all pubs projects (otherwise
+#                        only select enabled projects).
+# --quick              - If specified, skip auditing completed subruns.
+# --fix                - Fix problems (see below).
+# --big                - Flag files with more than 100 events.
 #
 # Here are the fixes that this script knows how to do.
 #
@@ -146,6 +149,8 @@ project_arg = ''
 pattern = ''
 minrun_arg = 0
 maxrun_arg = 0
+minstat_arg = 0
+maxstat_arg = 0
 all = 0
 quick = 0
 fix = 0
@@ -183,6 +188,16 @@ while len(args) > 0:
         del args[0:2]
     elif args[0] == '--maxrun' and len(args) > 1:
         maxrun_arg = int(args[1])
+        del args[0:2]
+    elif args[0] == '--status' and len(args) > 1:
+        minstat_arg = int(args[1])
+        maxstat_arg = minstat_arg
+        del args[0:2]
+    elif args[0] == '--minstatus' and len(args) > 1:
+        minstat_arg = int(args[1])
+        del args[0:2]
+    elif args[0] == '--maxstatus' and len(args) > 1:
+        maxstat_arg = int(args[1])
         del args[0:2]
     else:
         print 'Unknown option %s' % args[0]
@@ -335,6 +350,13 @@ for proj_info in proj_infos:
         # Loop over statuses.
 
         for status in range(last_status, first_status-1, -1):
+
+            # Status selection.
+
+            if status < minstat_arg:
+                continue
+            if maxstat_arg != 0 and status > maxstat_arg:
+                continue
 
             print
             print 'Checking status %d' % status
@@ -533,8 +555,17 @@ for proj_info in proj_infos:
 
                     if check and status - base_status >= 7 and status - base_status <= 9:
 
-                        listpath = os.path.join(pubs_stobj.logdir, 'files.list')
-                        if not project_utilities.safeexist(listpath):
+                        listpath = os.path.join(pubs_stobj.bookdir, 'files.list')
+                        validated_file_paths = []
+                        readok = False
+                        if project_utilities.safeexist(listpath):
+                            try:
+                                validated_file_paths = project_utilities.saferead(listpath)
+                                readok = True
+                            except:
+                                validated_file_paths = []
+                                readok = False
+                        if not readok:
                             print '***Error missing files.list'
                             print 'Xml = %s' % xml
 
@@ -559,7 +590,6 @@ for proj_info in proj_infos:
 
                             continue
 
-                        validated_file_paths = project_utilities.saferead(listpath)
                         disk_file_names = []
                         for line in validated_file_paths:
                             filepath = line.strip()
@@ -596,7 +626,7 @@ for proj_info in proj_infos:
 
                     if checkana and status - base_status >= 7 and status - base_status <= 9:
 
-                        listpath = os.path.join(pubs_stobj.logdir, 'filesana.list')
+                        listpath = os.path.join(pubs_stobj.bookdir, 'filesana.list')
                         if not project_utilities.safeexist(listpath):
                             print '***Error missing filesana.list'
                             print 'Xml = %s' % xml

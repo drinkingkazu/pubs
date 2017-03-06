@@ -43,7 +43,7 @@ case $1 in
     if [[ -z $proc ]]; then
 	echo daemon is not running...;
     else
-	echo stopping daemon;
+	echo killing daemon;
 	kill -9 $proc;
     fi
     ;;

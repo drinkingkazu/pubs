@@ -754,10 +754,10 @@ class production(ds_project_base):
             check_status = 0
             if self._check[istage]:
                 self.info('Invoking project.docheck for artroot files')
-                check_status = project.docheck(probj, stobj, ana=False)
+                check_status = project.docheck(probj, stobj, ana=False, quick=probj.validate_on_worker)
             elif self._checkana[istage]:
                 self.info('Invoking project.docheck for analysis files')
-                check_status = project.docheck(probj, stobj, ana=True)                
+                check_status = project.docheck(probj, stobj, ana=True, quick=probj.validate_on_worker)
             strout = sys.stdout.getvalue()
             strerr = sys.stderr.getvalue()
             sys.stdout = real_stdout
@@ -1015,13 +1015,18 @@ Job IDs    : %s
 
             # Declare artroot files.
 
-            declare_status = project.docheck_declarations(stobj.logdir, stobj.outdir,
+            bookdir = stobj.logdir
+            try:
+                bookdir = stobj.bookdir
+            except:
+                bookdir = stobj.logdir
+            declare_status = project.docheck_declarations(bookdir, stobj.outdir,
                                                           declare=True, ana=False)
 
             # Declare analysis root files.
 
             if declare_status == 0:
-                declare_status = project.docheck_declarations(stobj.logdir, stobj.outdir,
+                declare_status = project.docheck_declarations(bookdir, stobj.outdir,
                                                               declare=True, ana=True)
 
             # Create artroot dataset definition.

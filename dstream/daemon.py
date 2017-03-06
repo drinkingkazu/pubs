@@ -478,6 +478,7 @@ class proc_daemon(ds_base):
 
                     if not proj_active and proj_ptr.process_exist():
                         self._api.project_stopped(proj)
+                        self.info(' Clearing %s @ %s' % (proj, now_str))
                         (code,out,err) = proj_ptr.clear()
 
                         self.info(' %s returned %s @ %s' % (proj,code,now_str))
