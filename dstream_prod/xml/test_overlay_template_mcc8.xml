@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+
+<!-- Production Project -->
+
+<!DOCTYPE project [
+<!ENTITY release "v06_26_01_04">
+<!ENTITY file_type "mc">
+<!ENTITY run_type "physics">
+<!ENTITY name "overlay_genie_mcc8">
+<!ENTITY run_tag "run_REP_ZEROPAD_RUN_NUMBER">
+<!ENTITY prod_version "v1">
+<!ENTITY prod_mode "test">
+]>
+
+<job>
+
+<project name="&name;">
+
+  <!-- Project size -->
+  <numevents>1000000</numevents>
+
+  <!-- Operating System -->
+  <os>SL6</os>
+
+  <!-- Batch resources -->
+  <resource>DEDICATED,OPPORTUNISTIC</resource>
+
+  <!-- Project Version -->
+  <version>&prod_mode;_v06_26_01_04</version>
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <tag>&release;</tag>
+    <qual>e10:prof</qual>
+  </larsoft>
+
+  <!-- Run Number -->
+  <runnumber>REP_RUN_NUMBER</runnumber>
+
+  <!-- Validate on worker -->
+  <check>1</check>
+
+  <!-- Project stages -->
+
+  <stage name="geng4">
+    <fcl>standard_overlay_gen_griddriver.fcl</fcl>
+    <inputdef>prod_extunbiased_swizzle_inclusive_v3</inputdef>
+    <outdir>/pnfs/uboone/scratch/uboonepro/geng4/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/geng4/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/geng4/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/geng4/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <datatier>simulated</datatier>
+    <defname>&prod_mode;_geng4_&prod_version;_&run_tag;</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
+  </stage>
+
+  <stage name="detsim">
+    <fcl>standard_detsim_nonoise_bnb_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/uboonepro/detsim/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/detsim/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/detsim/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/detsim/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <datatier>detector-simulated</datatier>
+    <defname>&prod_mode;_detsim_&prod_version;_&run_tag;</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <memory>4000</memory>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+  </stage>
+
+  <stage name="overlay">
+    <fcl>standard_overlay_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/uboonepro/overlay/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/overlay/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/overlay/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/overlay/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <datatier>detector-simulated</datatier>
+    <defname>&prod_mode;_overlay_&prod_version;_&run_tag;</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <memory>4000</memory>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+  </stage>
+
+  <stage name="reco1">
+    <fcl>reco_uboone_mcc8_driver_overlay_stage1.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/reco1/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/reco1/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <datatier>reconstructed</datatier>
+    <defname>&prod_mode;_reco1_&prod_version;_&run_tag;</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+  </stage>
+
+  <stage name="reco2">
+    <fcl>reco_uboone_mcc8_driver_overlay_stage2.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/uboonepro/reco2/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/reco2/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/reco2/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/reco2/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <datatier>reconstructed</datatier>
+    <defname>&prod_mode;_reco2_&prod_version;_&run_tag;</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+  </stage>
+
+  <stage name="anatree">
+    <fcl>standard_ana_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/anatree/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/anatree/&release;/&prod_mode;_&name;_&prod_version;/&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <datatier>reconstructed</datatier>
+    <defname>&prod_mode;_anatree_&prod_version;_&run_tag;</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+    <check>0</check>
+  </stage>
+
+  <!-- file type -->
+  <filetype>&file_type;</filetype>
+
+  <!-- run type -->
+  <runtype>&run_type;</runtype>
+
+</project>
+
+</job>

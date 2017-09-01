@@ -51,7 +51,8 @@
     <anadatatier>root-tuple</anadatatier>
     <defname>&prod_mode;_raw_&prod_version;_&run_tag;</defname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
-    <jobsub>-f /pnfs/uboone/persistent/uboonedb_passwd --expected-lifetime=medium</jobsub>
+    <jobsub> --subgroup=prod -f /pnfs/uboone/persistent/uboonedb_passwd --expected-lifetime=medium --subgroup=prod</jobsub>
+    <jobsub_start> --subgroup=prod --expected-lifetime=short</jobsub_start>
     <memory>2000</memory>
   </stage>
 

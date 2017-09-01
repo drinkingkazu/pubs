@@ -52,6 +52,7 @@
     <defname>&prod_mode;_raw_notrig_&prod_version;_&run_tag;</defname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
     <jobsub>-f /pnfs/uboone/persistent/uboonedb_passwd --expected-lifetime=medium --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
     <memory>4000</memory>
   </stage>
 

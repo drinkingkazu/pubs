@@ -3,10 +3,10 @@
 <!-- Production Project -->
 
 <!DOCTYPE project [
-<!ENTITY release "v06_25_00">
+<!ENTITY release "v06_26_02">
 <!ENTITY file_type "data">
 <!ENTITY run_type "physics">
-<!ENTITY name "reco_mucs_bs33_data_mcc8_ddr_test2">
+<!ENTITY name "reco_mucs_bs33_data_mcc8_ddr_test4">
 <!ENTITY run_tag "run_REP_ZEROPAD_RUN_NUMBER">
 <!ENTITY prod_version "v6">
 <!ENTITY prod_mode "prod">
@@ -26,7 +26,7 @@
   <resource>DEDICATED,OPPORTUNISTIC</resource>
 
   <!-- Project Version -->
-  <version>&prod_mode;_v06_25_00</version>
+  <version>&prod_mode;_v06_26_02</version>
 
   <!-- Larsoft information -->
   <larsoft>
@@ -52,7 +52,8 @@
     <datatier>reconstructed</datatier>
     <defname>&prod_mode;_reco2_MuCS_bs33_&prod_version;_&run_tag;</defname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
-    <jobsub>--expected-lifetime=long</jobsub>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
   </stage>
 
   <!-- file type -->
@@ -75,7 +76,7 @@
   <resource>DEDICATED,OPPORTUNISTIC</resource>
 
   <!-- Project Version -->
-  <version>&prod_mode;_v06_25_00</version>
+  <version>&prod_mode;_v06_26_02</version>
 
   <!-- Larsoft information -->
   <larsoft>
@@ -89,7 +90,7 @@
   <!-- Project stages -->
 
   <stage name="anatree">
-    <inputdef>&prod_mode;_reco2_MuCS_bs33_&prod_version;_&run_tag;</inputdef>
+    <inputdef>&prod_mode;_reco2_MuCS_bs33_&prod_version;_mcc8_test4</inputdef>
     <fcl>standard_ana_uboone_data_TaggedMuCS.fcl</fcl>
     <outdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/reco_mucs_bs33_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/reco_mucs_bs33_&run_tag;</logdir>
@@ -98,6 +99,8 @@
     <anadatatier>root-tuple</anadatatier>
     <anadefname>&prod_mode;_anatree_MuCS_bs33_&prod_version;_&run_tag;</anadefname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
   </stage>
 
   <!-- file type -->

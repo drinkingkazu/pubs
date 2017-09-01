@@ -54,6 +54,7 @@
     <defname>&prod_mode;_reco1_PUBS_XMLVAR_STREAM_&prod_version;_&run_tag;</defname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
     <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
   </stage>
 
   <stage name="reco2">
@@ -114,6 +115,7 @@
     <anadefname>&prod_mode;_anatree_PUBS_XMLVAR_STREAM_&prod_version;_&run_tag;</anadefname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
     <jobsub>--expected-lifetime=short --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
   </stage>
 
   <!-- file type -->

@@ -45,12 +45,13 @@
     <outdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/anatree_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/anatree_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</logdir>
     <workdir>/pnfs/uboone/scratch/uboonepro/work/anatree/&release;/&prod_mode;_&name;_&prod_version;/anatree_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</workdir>
-    <bookdir>/uboone/data/uboonepro/data/anatree/&release;/&prod_mode;_&name;_&prod_version;/anatree_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</bookdir>
+    <bookdir>/uboone/data/uboonepro/book/data/anatree/&release;/&prod_mode;_&name;_&prod_version;/anatree_PUBS_XMLVAR_INPUT_STREAM_&run_tag;</bookdir>
     <numjobs>100</numjobs>
     <anadatatier>root-tuple</anadatatier>
     <anadefname>&prod_mode;_anatree_PUBS_XMLVAR_INPUT_STREAM_&prod_version;_&run_tag;</anadefname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
     <jobsub>--expected-lifetime=short --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
   </stage>
 
   <!-- file type -->
