@@ -139,6 +139,7 @@ class transfer_remote( ds_project_base ):
                     # this same run, which shouldn't happen, it'll fail the get_xtable call, and we won't try again
                     # to transfer that file (as is appropriate).
                     if "pnnl" in self._project:
+                        pdb.set_trace()
                         self.info('Will  look for  %s' % f )
                         try:
                             if "pnnl" in self._project:
@@ -219,6 +220,7 @@ class transfer_remote( ds_project_base ):
         samcode = 12
 
         # We expect to transfer files out of dCache.
+        pdb.set_trace()
         if not ('enstore' in loc[0]["full_path"] and 'pnfs' in loc[0]["full_path"]):
             self.error('No enstore or pnfs in loc[0]["full_path"]')
             return (transfer, samcode)

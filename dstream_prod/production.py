@@ -1,4 +1,4 @@
-## @namespace dstream_prod.production
+# @namespace dstream_prod.production
 #  @ingroup dstream_prod
 #  @brief Defines a project production
 #  @author yuntse
@@ -96,6 +96,7 @@ class production(ds_project_base):
         self._nsubruns    = []
         self._store       = {}
         self._storeana    = {}
+        self._clean       = {}
         self._add_location = {}
         self._add_location_ana = {}
         self._check = {}
@@ -250,6 +251,15 @@ class production(ds_project_base):
             for x in xrange(len(self._stage_digits)):
                 self._storeana[self._stage_digits[x]] = storeana_v[x]
 
+            # Set clean flag.
+            if proj_info._resource.has_key('CLEAN'):
+                clean_v = [int(x) for x in proj_info._resource['CLEAN'].split(':')]
+            else:
+                # Default is same as store flag.
+                clean_v = store_v
+            for x in xrange(len(self._stage_digits)):
+                self._clean[self._stage_digits[x]] = clean_v[x]
+
             # Set add location flag.
             if proj_info._resource.has_key('ADD_LOCATION'):
                 add_location_v = [int(x) for x in proj_info._resource['ADD_LOCATION'].split(':')]
@@ -401,10 +411,14 @@ class production(ds_project_base):
         probj = project.get_project(xml, '', stagename)
         stobj = probj.get_stage(stagename)
 
-        # If we are reading from sam, always return True.
+        # If we are not reading from files (generator or sam input), always return True.
 
-        if stobj.inputdef != '':
+        if stobj.inputfile == '' and stobj.inputlist == '':
             return True
+
+        project.get_projects.cache = {}
+        probj = project.get_project(xml, '', stagename)
+        stobj = probj.get_stage(stagename)
 
         # Check if this (run, subrun) has pubs input available.
         result = False
@@ -430,10 +444,40 @@ class production(ds_project_base):
 
         if not result:
             self.info('Input not ready.')
+            self.info('Input list = %s' % stobj.inputlist)
+            #dir = os.path.dirname(stobj.inputlist)
+            #if larbatch_posix.isdir(dir):
+            #    self.info('Deleting %s' % dir)
+            #    larbatch_posix.rmtree(dir)
 
         # Done.
 
         return result
+
+
+    def clean_output(self, probj, stobj, run, subruns):
+
+        # Clean output, log, and bookkeeping directories prior to job submission.
+
+        self.info('Clean output for run %d, subruns %s' % (run, str(subruns)))
+        outdir = stobj.outdir
+        logdir = stobj.logdir
+        bookdir = stobj.bookdir
+        for subrun in subruns:
+            outdirsr = outdir.replace('@s', str(subrun))
+            logdirsr = logdir.replace('@s', str(subrun))
+            bookdirsr = bookdir.replace('@s', str(subrun))
+            if larbatch_posix.isdir(outdirsr):
+                larbatch_posix.rmtree(outdirsr)
+                self.info('Deleting %s' % outdirsr)
+            if logdirsr != outdirsr and larbatch_posix.isdir(logdirsr):
+                larbatch_posix.rmtree(logdirsr)
+                self.info('Deleting %s' % logdirsr)
+            if bookdirsr != outdirsr and bookdirsr != logdirsr and larbatch_posix.isdir(bookdirsr):
+                larbatch_posix.rmtree(bookdirsr)
+                self.info('Deleting %s' % bookdirsr)
+
+        return
 
     def submit( self, statusCode, istage, run, subruns ):
         current_status = statusCode + istage
@@ -453,6 +497,12 @@ class production(ds_project_base):
             sys.stderr = StringIO.StringIO()
             probj, stobj = project.get_pubs_stage(self.getXML(run), '', stage, run, subruns,
                                                   self._version)
+
+            # Make sure maxfilesperjob is large enough to not truncate an input list.
+
+            if stobj.inputlist != '':
+                stobj.max_files_per_job = stobj.num_jobs
+
             strout = sys.stdout.getvalue()
             strerr = sys.stderr.getvalue()
             sys.stdout = real_stdout
@@ -487,6 +537,10 @@ class production(ds_project_base):
         if probj.release_tag != os.environ['UBOONECODE_VERSION']:
             self.error('Project version mismatch between environment and xml file.')
             raise Exception
+
+        # Clean output directories.
+
+        self.clean_output(probj, stobj, run, subruns)
 
         # Submit job.
         jobid=''
@@ -563,12 +617,16 @@ class production(ds_project_base):
             head = single_data[:n1+1]
             tail = single_data[n2:]
             process=0
+            index=0
+            last_subrun = 0
             for subrun in subruns:
-                if process < stobj.num_jobs:
+                if index == process * len(subruns) / stobj.num_jobs:
                     multi_data.append('%s%d%s' % (head, process, tail))
+                    last_subrun = subrun
+                    process += 1
                 else:
-                    multi_data.append('Merge %d' % subruns[0])
-                process += 1
+                    multi_data.append('Merge %d' % last_subrun)
+                index += 1
         else:
             for subrun in subruns:
                 multi_data.append(single_data)
@@ -775,7 +833,7 @@ class production(ds_project_base):
                 self.error(item)
             for line in traceback.format_tb(e[2]):
                 self.error(line)
-            check_status = 1
+            return statusCode + istage 
 
         # Update pubs status.
         if check_status == 0:
@@ -868,6 +926,10 @@ Job IDs    : %s
         if probj.release_tag != os.environ['UBOONECODE_VERSION']:
             self.error('Project version mismatch between environment and xml file.')
             raise Exception
+
+        # Clean output directories.
+
+        self.clean_output(probj, stobj, run, subruns)
 
         # Submit job.
         jobid=''
@@ -1301,6 +1363,29 @@ Job IDs    : %s
         # Update pubs status.
         if loc_status == 0 and loc_status_ana == 0:
            statusCode = self.kDONE
+
+           # Do cleanup.
+
+           if self._clean[istage]:
+               self.info('Clean requested.')
+               if stobj.inputlist != '' and larbatch_posix.exists(stobj.inputlist):
+                   self.info('Clean input list %s' % stobj.inputlist)
+                   for line in larbatch_posix.readlines(stobj.inputlist):
+                       f = line.strip()
+                       self.info('Delete %s' % f)
+                       larbatch_posix.remove(f)
+               if larbatch_posix.isdir(stobj.outdir):
+                   self.info('Clean outdir %s' % stobj.outdir)
+                   larbatch_posix.rmtree(stobj.outdir)
+               if stobj.logdir != stobj.outdir and larbatch_posix.isdir(stobj.logdir):
+                   self.info('Clean logdir %s' % stobj.logdir)
+                   larbatch_posix.rmtree(stobj.logdir)
+               if stobj.bookdir != stobj.outdir and stobj.bookdir != stobj.logdir and larbatch_posix.isdir(stobj.bookdir):
+                   self.info('Clean bookdir %s' % stobj.bookdir)
+                   larbatch_posix.rmtree(stobj.bookdir)
+           else:
+               self.info('No clean requested.')
+
            istage += 10
 
         # Pretend I'm doing something
@@ -1371,7 +1456,9 @@ Job IDs    : %s
                         continue
 
                 self.info('Inspecting status %s @ %s' % (fstatus,self.now_str()))
-                
+                self.info('Number of jobs = %d' % self._njobs)
+                self.info('Total number of jobs = %d' % self._njobs_tot)
+
                 target_list = []
                 if fstatus == self.kINITIATED and self._parent:
                     target_list = self.get_xtable_runs([self._table,self._parent],[fstatus,self._parent_status])
@@ -1416,7 +1503,7 @@ Job IDs    : %s
                         run_subruns[run].add(subrun)
                         nsubruns += 1
 
-                    if nsubruns >= self._nruns:
+                    if istatus == self.kINITIATED and nsubruns >= self._nruns:
                         self.info('Quitting run/subrun loop because of nruns limit')
                         break
 

@@ -51,6 +51,15 @@ html.write(
 update_time = datetime.datetime.now().strftime('%d-%b-%Y %H:%M')
 html.write('<p>Updated %s</p>\n' % update_time)
 
+# Get number of active sam projects.
+
+nactive = 0
+try:
+    f = open('/web/sites/www-microboone.fnal.gov/htdocs/at_work/AnalysisTools/active_projects_summary.txt')
+    nactive = int(f.readline())
+except:
+    pass
+
 # Generate daemon status.
 
 daemons = ('uboonegpvm01.fnal.gov',
@@ -59,7 +68,13 @@ daemons = ('uboonegpvm01.fnal.gov',
            'uboonegpvm04.fnal.gov',
            'uboonegpvm05.fnal.gov',
            'uboonegpvm06.fnal.gov',
-           'uboonegpvm07.fnal.gov')
+           'uboonegpvm07.fnal.gov',
+           'uboonepubsgpvm01.fnal.gov',
+           'uboonepubsgpvm02.fnal.gov',
+           'uboonepubsgpvm03.fnal.gov',
+           'uboonepubsgpvm04.fnal.gov',
+           'uboonepubsgpvm05.fnal.gov',
+           'uboonepubsgpvm06.fnal.gov')
 
 
 html.write('<table style="width:300px; display:inline-block">')
@@ -107,6 +122,7 @@ for daemon in daemons:
     html.write('<td><font color="%s">%s</font></td>\n' % (color, status))
     html.write('</tr>\n')
 html.write('<tr><td colspan=2><a href=http://www-microboone.fnal.gov/at_work/AnalysisTools/logcheck.txt>Check logs</a></td></tr>')
+html.write('<tr><td colspan=2>%d <a href=http://www-microboone.fnal.gov/at_work/AnalysisTools/active_projects.txt>active sam projects</a></td></tr>' % nactive)
 html.write('</table>\n')
 
 # Generate legend.

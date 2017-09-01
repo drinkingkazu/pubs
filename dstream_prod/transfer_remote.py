@@ -219,7 +219,11 @@ class transfer_remote( ds_project_base ):
         samcode = 12
 
         # We expect to transfer files out of dCache.
-        if not ('enstore' in loc[0]["full_path"] and 'pnfs' in loc[0]["full_path"]):
+        if (len(loc)>1):
+            self.error('Mark ' + in_file + ' as successfully transfered, as it has two samweb locations.')
+            return (0, 0)
+            
+        if not ('enstore' in loc[0]["full_path"] and 'pnfs' in loc[0]["full_path"] ):
             self.error('No enstore or pnfs in loc[0]["full_path"]')
             return (transfer, samcode)
 

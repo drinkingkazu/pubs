@@ -19,6 +19,7 @@ from dstream import ds_status
 # From larbatch
 import project
 import project_utilities
+import larbatch_posix
 from project_modules.pubsdeadenderror import PubsDeadEndError
 from project_modules.pubsinputerror import PubsInputError
 
@@ -288,7 +289,7 @@ class production(ds_project_base):
                 # Default is to not do fast check all stages.
                 check_f = [0] * len(self._stage_names)
             
-	    for x in xrange(len(self._stage_digits)):
+            for x in xrange(len(self._stage_digits)):
                 self._check[self._stage_digits[x]] = check_v[x]
 	    
 	    for x in xrange(len(self._stage_digits)):
@@ -410,15 +411,17 @@ class production(ds_project_base):
         self.info('Checking input readiness for run %d, subrun %d' % (run,subrun))
 
         xml = self.getXML(run)
+        self.info('XML = %s' % xml)
 
         # First check if we are reading files from sam.
 
         probj = project.get_project(xml, '', stagename)
         stobj = probj.get_stage(stagename)
 
-        # If we are reading from sam, always return True.
+        # If we are not reading from files (generator or sam input), always return True.
 
-        if stobj.inputdef != '':
+        
+        if stobj.inputfile == '' and stobj.inputlist == '':
             return True
 
         # Check if this (run, subrun) has pubs input available.
@@ -456,6 +459,7 @@ class production(ds_project_base):
         
         # Report starting
         self.info('Submit run %d, subruns %s' % (run, str(subruns)))
+        self.info('XML = %s' % self.getXML(run))
         self._data = str( self._data )
 
         # Main command
@@ -687,6 +691,7 @@ class production(ds_project_base):
 
     def check( self, statusCode, istage, run, subrun ):
         self.info('Check run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
         self._data = str( self._data )
         nSubmit     = None
 	samweb = project_utilities.samweb()
@@ -730,7 +735,7 @@ class production(ds_project_base):
 
         nout = 0
         nlog = 0
-        for path, subdirs, files in os.walk(stobj.outdir):
+        for path, subdirs, files in larbatch_posix.walk(stobj.outdir):
             #self.debug(path)
             dname = path.split('/')[-1]
             if not len(dname.split('_'))==2 or not dname.split('_')[0].isdigit() or not dname.split('_')[1].isdigit():
@@ -741,7 +746,7 @@ class production(ds_project_base):
                 self.info('Deleting extra output directory %s' % path)
                 shutil.rmtree(path)
                 nout -= 1
-        for path, subdirs, files in os.walk(stobj.logdir):
+        for path, subdirs, files in larbatch_posix.walk(stobj.logdir):
             #self.debug(path)
             dname = path.split('/')[-1]
             if not len(dname.split('_'))==2 or not dname.split('_')[0].isdigit() or not dname.split('_')[1].isdigit():
@@ -817,7 +822,7 @@ class production(ds_project_base):
 	   statusCode = self.kREADYFORSAM
            self._data = ''
 
-	elif nSubmit > self._nresubmission:
+        elif nSubmit > self._nresubmission:
            # If the sample has been submitted more than a certain number
            # of times, email the expert, and move on to the next stage
            subject = "%s jobs fails after %d resubmissions" % (self._project,nSubmit)
@@ -864,6 +869,7 @@ Job IDs    : %s
                              
         # Report starting
         self.info('Recover run %d, subruns %s' % (run, str(subruns)))
+        self.info('XML = %s' % self.getXML(run))
         self._data = str( self._data )
 
         # Main command
@@ -1009,6 +1015,7 @@ Job IDs    : %s
     def declare( self, statusCode, istage, run, subrun ):
 
         self.info('Declare run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
 
         # Get stage name.
         stage = self._digit_to_name[istage]
@@ -1124,6 +1131,9 @@ Job IDs    : %s
             statusCode = self.kSTORED
             return statusCode + istage
 
+        self.info('Store run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
+
         # Get stage name.
         stage = self._digit_to_name[istage]
 
@@ -1221,6 +1231,7 @@ Job IDs    : %s
 
     def check_location( self, statusCode, istage, run, subrun ):
         self.info('Check location for run %d, subrun %d' % (run, subrun))
+        self.info('XML = %s' % self.getXML(run))
 
         # Check store flag.
 
@@ -1358,6 +1369,7 @@ Job IDs    : %s
 
         if os.environ.has_key('X509_USER_CERT') and os.environ.has_key('X509_USER_KEY'):
             cmd=['voms-proxy-init',
+                 '-hours', '24',
                  '-rfc',
                  '-cert', os.environ['X509_USER_CERT'],
                  '-key', os.environ['X509_USER_KEY'],
@@ -1436,7 +1448,7 @@ Job IDs    : %s
                             self.debug('Skipping (run,subrun) = (%d,%d) ... not ready to be process next stage' % (run,subrun))
                             continue
 
-                    self.debug('Found run/subrun: %s/%s' % (run,subrun))
+                    self.info('Found run/subrun: %s/%s' % (run,subrun))
                     if not run_subruns.has_key(run):
                         self.info('Found run: %s ... inspecting @ %s' % (run,self.now_str()))
                         run_subruns[run] = set()
@@ -1444,7 +1456,7 @@ Job IDs    : %s
                         run_subruns[run].add(subrun)
                         nsubruns += 1
 
-                    if nsubruns >= 10*self._nruns:
+                    if nsubruns >= self._nruns:
                         self.info('Quitting run/subrun loop because of nruns limit')
                         break
 
@@ -1474,7 +1486,21 @@ Job IDs    : %s
                                         multiaction.__name__, self.now_str()))
                                 self.info('Run %s' % run)
                                 self.info('Subruns: %s' % str(subruns))
+
+                                # Multiaction might truncate subrun list.
+
+                                before_subruns = set(subruns)
                                 statusCode = multiaction( statusCode, istage, run, subruns )
+
+                                # Return unprocessed subruns to original set of subruns.
+
+                                unprocessed_subruns = before_subruns - set(subruns)
+                                if len(unprocessed_subruns) > 0:
+                                    self.info('Unprocessed subruns: %s' % unprocessed_subruns)
+                                    all_subruns.update(unprocessed_subruns)
+
+                                # Done.
+
                                 self.info('Finished a multiple subrun action: %s @ %s' % (
                                         multiaction.__name__, self.now_str()))
 

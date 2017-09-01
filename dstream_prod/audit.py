@@ -530,12 +530,12 @@ for proj_info in proj_infos:
 
                                 # Reset status back to 1.
 
-                                update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                 ok = dbi.commit(update_query)
                                 if ok:
                                     print 'Status reset to 1.'
 
-                            elif fix and status == 1 and parent == 'prod_swizzle_filter_v3':
+                            elif fix and status == 1 and project_name.startswith('prod_swizzle_merge'):
                                 update_query = 'update %s set status=1 where run=%d and subrun=%d' % (parent, run, subrun)
                                 ok = dbi.commit(update_query)
                                 if ok:
@@ -583,7 +583,7 @@ for proj_info in proj_infos:
 
                                 # Reset status back to 1.
 
-                                update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                 ok = dbi.commit(update_query)
                                 if ok:
                                     print 'Status reset to 1.'
@@ -600,8 +600,9 @@ for proj_info in proj_infos:
 
                                 ontape = False
                                 if status - base_status == 9:
-                                    print '***Error validated file not on disk (might be on tape)'
-                                    ontape = True
+                                    #print '***Error validated file not on disk (might be on tape)'
+                                    loc = samweb.locateFile(os.path.basename(filepath))
+                                    ontape = len(loc) > 0
 
                                 if not ontape:
                                     print '***Error validated file not on disk.'
@@ -609,11 +610,21 @@ for proj_info in proj_infos:
                                     print project_utilities.safeexist(filepath)
                                     print 'Xml = %s' % xml
 
-                                    if fix and status - base_status == 7:
+                                    if fix:
+
+                                        # Declare files bad in sam.
+
+                                        for filename in declared_files:
+                                            declare_bad(samweb, filename)
+                                        for filename in ana_declared_files:
+                                            declare_bad(samweb, filename)
+
+                                        if status - base_status > 7:
+                                            declare_bad(samweb, os.path.basename(filepath))
 
                                         # Reset status back to 1.
 
-                                        update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                        update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                         ok = dbi.commit(update_query)
                                         if ok:
                                             print 'Status reset to 1.'
@@ -645,7 +656,7 @@ for proj_info in proj_infos:
 
                                 # Reset status back to 1.
 
-                                update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                 ok = dbi.commit(update_query)
                                 if ok:
                                     print 'Status reset to 1.'
@@ -663,8 +674,9 @@ for proj_info in proj_infos:
 
                                 ontape = False
                                 if status - base_status == 9:
-                                    print '***Error validated analysis file not on disk (might be on tape)'
-                                    ontape = True
+                                    #print '***Error validated analysis file not on disk (might be on tape)'
+                                    loc = samweb.locateFile(os.path.basename(filepath))
+                                    ontape = len(loc) > 0
 
                                 if not ontape:
                                     print '***Error validated analysis file not on disk.'
@@ -673,14 +685,21 @@ for proj_info in proj_infos:
 
                                     if fix and status - base_status == 7:
 
+                                        # Declare files bad in sam.
+
+                                        for filename in declared_files:
+                                            declare_bad(samweb, filename)
+                                        for filename in ana_declared_files:
+                                            declare_bad(samweb, filename)
+
                                         # Reset status back to 1.
 
-                                        update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                        update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                         ok = dbi.commit(update_query)
                                         if ok:
                                             print 'Status reset to 1.'
 
-                                continue
+                                    continue
                             else:
                                 disk_ana_file_names.append(os.path.basename(filepath))
 
@@ -706,10 +725,12 @@ for proj_info in proj_infos:
 
                                     # Reset status back to 1.
 
-                                    update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                    update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                     ok = dbi.commit(update_query)
                                     if ok:
                                         print 'Status reset to 1.'
+
+                                continue
 
                     # For status 9, check for analysis files in dropbox.
 
@@ -733,8 +754,10 @@ for proj_info in proj_infos:
 
                                     # Reset status back to 1.
 
-                                    update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                    update_query = 'update %s set status=1 where run=%d and ((subrun=%d and status=%d) or (data like \'Merge %d\' and status=100))' % (table, run, subrun, status, subrun)
                                     ok = dbi.commit(update_query)
                                     if ok:
                                         print 'Status reset to 1.'
+
+                                continue
 
