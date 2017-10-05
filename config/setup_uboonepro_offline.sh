@@ -83,7 +83,7 @@ case `uname -n` in
 	        #setup uboonecode v05_08_00_05 -q e9:prof
                 #setup ubutil v06_16_00 -q e10:prof
 		#setup larbatch v01_25_00
-	        setup uboonecode v06_26_01_06 -q e10:prof
+	        setup uboonecode v06_26_01_07 -q e10:prof
 		;;
 	    (uboonegpvm02*)
 	        setup uboonecode v05_08_00_05 -q e9:prof
@@ -116,7 +116,9 @@ case `uname -n` in
 		setup larbatch v01_31_00
 		;;
 	    (uboonegpvm06*)
-	        setup uboonecode v05_08_00_08 -q e9:prof
+	        setup uboonecode v05_08_00_03 -q e9:prof
+                setup ubutil v06_16_00 -q e10:prof
+		setup larbatch v01_32_05
 		;;
             (uboonegpvm07*)
                 #setup uboonecode v05_11_01 -q e9:prof
@@ -138,25 +140,28 @@ case `uname -n` in
                 ;;
 
 	    (uboonepubsgpvm03*)
-	        setup uboonecode v06_26_01_06 -q e10:prof
+	        setup uboonecode v06_26_01_07 -q e10:prof
                 #setup ubutil v06_16_00 -q e10:prof
                 #setup larbatch v01_26_05
                 ;;
 
 	    (uboonepubsgpvm04*)
-	        setup uboonecode v06_26_01_01 -q e10:prof
+	        setup uboonecode v06_26_01 -q e10:prof
+		setup ubutil v06_16_00 -q e10:prof
+		setup larbatch v01_32_05
                 #setup ubutil v06_16_00 -q e10:prof
                 #setup larbatch v01_26_05
                 ;;
 
 	    (uboonepubsgpvm05*)
-	        setup uboonecode v06_26_01_06 -q e10:prof
+	        setup uboonecode v06_26_01_07 -q e10:prof
                 #setup ubutil v06_16_00 -q e10:prof
                 #setup larbatch v01_26_05
                 ;;
 
 	    (uboonepubsgpvm06*)
-	        setup uboonecode v06_26_01 -q e10:prof
+	        setup uboonecode v06_26_01_01 -q e10:prof
+
                 #setup ubutil v06_16_00 -q e10:prof
                 #setup larbatch v01_26_05
                 ;;

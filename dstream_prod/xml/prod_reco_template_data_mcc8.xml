@@ -3,12 +3,12 @@
 <!-- Production Project -->
 
 <!DOCTYPE project [
-<!ENTITY release "v06_26_01_06">
+<!ENTITY release "v06_26_01_07">
 <!ENTITY file_type "data">
 <!ENTITY run_type "physics">
 <!ENTITY name "reco_PUBS_XMLVAR_STREAM_data_mcc8">
 <!ENTITY run_tag "run_REP_ZEROPAD_RUN_NUMBER">
-<!ENTITY prod_version "v8">
+<!ENTITY prod_version "v9">
 <!ENTITY prod_mode "prod">
 ]>
 
@@ -26,7 +26,7 @@
   <resource>DEDICATED,OPPORTUNISTIC</resource>
 
   <!-- Project Version -->
-  <version>&prod_mode;_v06_26_01_06</version>
+  <version>&prod_mode;_v06_26_01_07</version>
 
   <!-- Larsoft information -->
   <larsoft>
@@ -66,6 +66,8 @@
     <numjobs>100</numjobs>
     <datatier>reconstructed</datatier>
     <defname>&prod_mode;_reco2_PUBS_XMLVAR_STREAM_&prod_version;_&run_tag;</defname>
+    <anadatatier>root-tuple</anadatatier>
+    <anadefname>&prod_mode;_dqm_PUBS_XMLVAR_STREAM_&prod_version;_&run_tag;</anadefname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
     <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
   </stage>
@@ -90,7 +92,7 @@
   <resource>DEDICATED,OPPORTUNISTIC</resource>
 
   <!-- Project Version -->
-  <version>&prod_mode;_v06_26_01_06</version>
+  <version>&prod_mode;_v06_26_01_07</version>
 
   <!-- Larsoft information -->
   <larsoft>

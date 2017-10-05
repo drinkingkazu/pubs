@@ -37,6 +37,9 @@
   <!-- Run Number -->
   <runnumber>REP_RUN_NUMBER</runnumber>
 
+  <!-- Validate on worker -->
+  <check>1</check>
+
   <!-- Project stages -->
 
   <stage name="swizzle">

@@ -8,6 +8,7 @@
 # Python include
 import time, copy, os, signal, sys
 from subprocess   import Popen, PIPE
+import threading
 # dstream include
 from pub_util     import pub_env
 from ds_exception import DSException
@@ -71,12 +72,55 @@ class proc_action(object):
             self._running = (self._proc.poll() is None)
         return self._running
 
+    ## Read lines from file.
+    def _read(self, f, result):
+        while f:
+            line = f.readline()
+            if line == '':
+                break
+            else:
+                result.append(line)
+
+    ## Read stdout and stderr from subprocess pipe, with timeout.
+    def _communicate(self):
+
+        # Stdout.
+
+        out = []
+        stdout_thread = threading.Thread(target=self._read, args=(self._proc.stdout, out))
+        stdout_thread.setDaemon(True) # Allow main program to exit even if thread never finishes.
+        stdout_thread.start()
+        stdout_thread.join(60)  # Join with timeout.
+        if stdout_thread.isAlive():
+            self._logger.warning('Did not get EOF from stdout.  Thread leaked.')
+        outstr = ''
+        for line in out:
+            outstr += line
+
+        # Stderr.
+
+        err = []
+        stderr_thread = threading.Thread(target=self._read, args=(self._proc.stderr, err))
+        stderr_thread.setDaemon(True) # Allow main program to exit even if thread never finishes.
+        stderr_thread.start()
+        stderr_thread.join(60)  # Join with timtout.
+        if stderr_thread.isAlive():
+            self._logger.warning('Did not get EOF from stderr.  Thread leaked.')
+        errstr = ''
+        for line in err:
+            errstr += line
+
+        # Done.
+
+        return outstr, errstr
+
     ## @brief Clears a project process, if exists, and returns (stdout,stderr). 
     #  @details If process is active, it waits to finish. Use active() function\n
     #  before calling this to avoid waiting time.
     def clear(self):
         if self._proc is None: return (None,None,None)
-        (out,err) = self._proc.communicate()
+        #(out,err) = self._proc.communicate()
+        (out,err) = self._communicate()
         code = self._proc.poll()
         del self._proc
         self._running=False
