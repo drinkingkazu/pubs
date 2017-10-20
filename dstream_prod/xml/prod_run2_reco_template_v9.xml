@@ -3,12 +3,12 @@
 <!-- Production Project -->
 
 <!DOCTYPE project [
-<!ENTITY release "v06_26_01_08">
+<!ENTITY release "v06_26_01_07">
 <!ENTITY file_type "data">
 <!ENTITY run_type "physics">
-<!ENTITY name "reco_PUBS_XMLVAR_STREAM_data_mcc8">
+<!ENTITY name "run2_reco_PUBS_XMLVAR_STREAM_data_mcc8">
 <!ENTITY run_tag "run_REP_ZEROPAD_RUN_NUMBER">
-<!ENTITY prod_version "v10">
+<!ENTITY prod_version "v9">
 <!ENTITY prod_mode "prod">
 ]>
 
@@ -26,7 +26,7 @@
   <resource>DEDICATED,OPPORTUNISTIC</resource>
 
   <!-- Project Version -->
-  <version>&prod_mode;_v06_26_01_08</version>
+  <version>&prod_mode;_run2_v06_26_01_07</version>
 
   <!-- Larsoft information -->
   <larsoft>
@@ -43,7 +43,7 @@
   <!-- Project stages -->
 
   <stage name="reco1">
-    <inputdef>prod_PUBS_XMLVAR_STREAM_reco_neutrino2016_beamfilter_goodruns_v5</inputdef>
+    <inputdef>prod_PUBS_XMLVAR_STREAM_swizzle_inclusive_v4</inputdef>
     <fcl>reco_uboone_data_mcc8_driver_stage1.fcl</fcl>
     <outdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</logdir>
@@ -92,7 +92,7 @@
   <resource>DEDICATED,OPPORTUNISTIC</resource>
 
   <!-- Project Version -->
-  <version>&prod_mode;_v06_26_01_08</version>
+  <version>&prod_mode;_run2_v06_26_01_07</version>
 
   <!-- Larsoft information -->
   <larsoft>
@@ -106,7 +106,7 @@
   <!-- Project stages -->
 
   <stage name="anatree">
-    <inputdef>&prod_mode;_reco2_PUBS_XMLVAR_STREAM_&prod_version;_mcc8</inputdef>
+    <inputdef>&prod_mode;_run2_reco2_PUBS_XMLVAR_STREAM_&prod_version;_mcc8</inputdef>
     <fcl>standard_ana_uboone_data.fcl</fcl>
     <outdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/anatree/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</logdir>

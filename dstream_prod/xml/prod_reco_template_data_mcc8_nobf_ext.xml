@@ -43,8 +43,8 @@
   <!-- Project stages -->
 
   <stage name="reco1">
-    <inputdef>prod_PUBS_XMLVAR_STREAM_reco_neutrino2016_beamfilter_goodruns_v5</inputdef>
-    <fcl>reco_uboone_data_mcc8_driver_stage1.fcl</fcl>
+    <inputdef>prod_PUBS_XMLVAR_STREAM_reco_neutrino2016_goodruns_v5</inputdef>
+    <fcl>reco_uboone_data_mcc8_driver_stage1_ext.fcl</fcl>
     <outdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</outdir>
     <logdir>/pnfs/uboone/scratch/uboonepro/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</logdir>
     <workdir>/pnfs/uboone/scratch/uboonepro/work/reco1/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</workdir>
