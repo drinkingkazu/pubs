@@ -22,7 +22,10 @@ class dummy_daq(ds_project_base):
     _project = 'dummy_daq'
 
     ## @brief default ctor can take # runs to process for this instance
-    def __init__(self):
+    def __init__(self,project_name):
+
+        if project_name:
+            self._project = project_name
 
         # Call base class ctor
         super(dummy_daq,self).__init__()
@@ -136,7 +139,12 @@ class dummy_daq(ds_project_base):
 # A unit test section
 if __name__ == '__main__':
 
-    test_obj = dummy_daq()
+    import sys
+    test_obj = None
+    if len(sys.argv)>1:
+        test_obj = dummy_daq(sys.argv[1])
+    else:
+        test_obj = dummy_daq()
 
     test_obj.process_newruns()
 
