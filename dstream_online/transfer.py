@@ -221,6 +221,22 @@ class transfer( ds_project_base ):
             
             if mp.poll(i):
                 self.error('Failed copy %s @ %s' % (runid_v[i],time.strftime('%Y-%m-%d %H:%M:%S')))
+                file_for_deletion = '%s/%s'%(self._out_dir,os.path.basename(args_v[i][0]))
+                rm_cmd = 'Issuing deletion command: ifdh rm %s' % file_for_deletion
+                self.error(rm_cmd)
+                try:
+                    ifdh_cli.rm(file_for_deletion)
+                except:
+                    self.error('TRIED TO DELETE %s but got an error from ifdhc' % file_for_deletion)
+
+                file_for_deletion = '%s/%s'%(self._out_dir,os.path.basename(args_v[i][1]))
+                rm_cmd = 'Issuing deletion command: ifdh rm %s' % file_for_deletion
+                self.error(rm_cmd)
+                try:
+                    ifdh_cli.rm(file_for_deletion)
+                except:
+                    self.error('TRIED TO DELETE %s but got an error from ifdhc' % file_for_deletion)
+
                 old_status = self._api.get_status( ds_status(self._project, run, subrun, 0) )
                 if self._ntrials and (not old_status._data or int(old_status._data) < self._ntrials):
                     self.info('Will retry later...')
@@ -285,6 +301,7 @@ class transfer( ds_project_base ):
 # A unit test section
 if __name__ == '__main__':
 
+    ifdh_cli = ifdh.ifdh()
     proj_name = sys.argv[1]
 
     obj = transfer( proj_name )

@@ -1,5 +1,27 @@
 #! /bin/bash
 
+case `uname -n` in
+    (*ubdaq-prod-near1*)
+	echo Host is ubdaq-prod-near1, preparing to rotate logs
+	;;
+    (*)
+	echo Script must be run on ubdaq-prod-near1!!!
+	echo Exiting with extreme prejudice.
+	return 1
+	;;
+esac
+
+case `whoami` in
+    (uboonepro)
+       echo Rotating PUBS logs into /datalocal/uboonepro/pubslog
+	;;
+    (*)
+        echo This should only be used for uboonepro account!!!
+	echo Exiting with extreme prejudice.
+	return 1
+	;;
+esac
+
 dir=/home/uboonepro/pubs/log
 
 # Rename log files above a minimum size.
@@ -15,7 +37,7 @@ do
     dest=${logdir}`basename ${log}.${now}`
     mv -f ${log} ${dest}
     tar czf ${dest}.tgz ${dest}
-    mkdir $logdir/log_$now
+    mkdir -p $logdir/log_$now
     if [ -e "${dest}.tgz" ] ; then
 	mv ${dest}.tgz $logdir/log_$now
 	rm -f ${dest}

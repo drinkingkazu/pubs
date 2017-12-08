@@ -7,8 +7,8 @@ def GetAvailableFileList(NRUNS=100):
 
     MAIN_RUN_TABLE = 'MainRun'
     LIMIT_NRUNS    = NRUNS
-    SAM_LIST_FORMAT_STAGED = "data_tier = raw and file_type = data and file_format = binaryraw-uncompressed and run_number = %d and availability: virtual"
-    SAM_LIST_FORMAT_STORED = "data_tier = raw and file_type = data and file_format = binaryraw-uncompressed and run_number = %d and availability: physical"
+    SAM_LIST_FORMAT_STAGED = "data_tier = raw and file_type = data and file_format = binaryraw-compressed and run_number = %d and availability: virtual"
+    SAM_LIST_FORMAT_STORED = "data_tier = raw and file_type = data and file_format = binaryraw-compressed and run_number = %d and availability: physical"
     SQL_CMD_FORMAT = 'SELECT Run, SubRun FROM prod_transfer_binary_evb2dropbox_near1 WHERE Status=%d ORDER BY Run DESC, SubRun DESC LIMIT %d' 
     SQL_CMD_FORMAT = SQL_CMD_FORMAT % (kSTATUS_VALIDATE_DATA,LIMIT_NRUNS)
     FNAME_SUFFIX_FORMAT = '%07d-%05d.ubdaq'
