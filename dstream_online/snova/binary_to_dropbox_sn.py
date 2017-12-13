@@ -129,6 +129,8 @@ class binary_to_dropbox( ds_project_base ):
         self.info("Processing in_file_v %s"%str(in_file_v))
         self.info("Processing json_file_v %s"%str(json_file_v))
 
+
+
         mp = self.process_files(in_file_v,json_file_v)
         
         for i in xrange(len(in_file_v)):
@@ -158,18 +160,9 @@ class binary_to_dropbox( ds_project_base ):
     def process_files(self, in_file_v, in_json_v):
 
         mp = ds_multiprocess(self._project)
-        # cmd_template  = ""
-        # cmd_template += "scp %s vgenty@" + self._remote_host + ":/nashome/v/vgenty/tmp ; "
-        # cmd_template += "ssh -T -x vgenty@" + self._remote_host + " "
-        # cmd_template += "'source /nashome/v/vgenty/setupsam.sh 1>/dev/null 2>/dev/null; "
-        # cmd_template += "ifdh cp /nashome/v/vgenty/tmp/%s %s;"
-        # cmd_template += "ifdh cp %s %s; '"
         cmd_template  = ""
-        cmd_template += "scp %s uboonepro@" + self._remote_host + ":/nashome/v/vgenty/tmp ; "
-        cmd_template += "ssh -T -x uboonepro@" + self._remote_host + " "
-        cmd_template += "'source /nashome/v/vgenty/setupsam.sh 1>/dev/null 2>/dev/null; "
-        cmd_template += "ifdh cp /nashome/v/vgenty/tmp/%s %s;"
-        cmd_template += "ifdh cp %s %s; '"
+        cmd_template += "ifdh mv %s %s;" # this copies the JSON
+        cmd_template += "ifdh cp %s %s;" # this copies the BINARY
 
         for in_file,in_json in zip(in_file_v,in_json_v):
             
@@ -177,18 +170,18 @@ class binary_to_dropbox( ds_project_base ):
             in_file_name = os.path.basename(in_file)
             in_file_destination = os.path.join(self._dropbox_location,in_file_name)
 
+            in_json_origin = in_json
+            in_json_file_name = os.path.basename(in_json_origin)
+            in_json_destination = os.path.join(self._dropbox_location,in_json_file_name)
+
             in_file_pre_name = os.path.basename(in_file)
             in_file_pre_name = in_file.split("-")
             in_file_pre_name = in_file_pre_name[:2] + in_file_pre_name[3:]
             in_file_pre_name = "-".join(in_file_pre_name)
             in_file_pre_origin = os.path.join(self._binary_location,self._seb,in_file_pre_name)
             
-            in_json_origin = in_json
-            in_json_file_name = os.path.basename(in_json_origin)
-            in_json_destination = os.path.join(self._dropbox_location,in_json_file_name)
 
             cmd = cmd_template % (in_json_origin,
-                                  in_json_file_name,
                                   in_json_destination,
                                   in_file_pre_origin,
                                   in_file_destination)
