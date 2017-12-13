@@ -501,8 +501,9 @@ class ds_reader(pubdb_reader):
             for y in x[8].split(','):
         
                 tmp = y.split("=>")
-                
-                exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+
+                #exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+                exec('resource[%s]=%s' % (tmp[0],str(tmp[1])))
 
         return ds_project(project  = project,
                           command  = x[0],
@@ -540,7 +541,8 @@ class ds_reader(pubdb_reader):
 
                     tmp = y.split("=>")
 
-                    exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+                    #exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+                    exec('resource[%s]=%s' % (tmp[0],str(tmp[1])))
 
             info_array.append( ds_project( project  = x[0],
                                            command  = x[1],
@@ -1310,8 +1312,9 @@ class death_star(ds_master):
         result = self.commit(query)
         
         if result:
-
-            self._logger.warning('Thank you. Death Star became 1 run bigger.')
+            
+            #self._logger.warning('Thank you. Death Star became 1 run bigger.')
+            pass
 
         else:
 

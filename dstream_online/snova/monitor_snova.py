@@ -82,7 +82,7 @@ def copy_subruns(data):
 	
 	# determine if file is already there
         SS = "if [ -e %s ]; then echo 1; else echo 0; fi" % dst_file
-	ret = int(exec_ssh("vgenty",obj._remote_host,SS)[0])
+	ret = int(exec_ssh(obj._user,obj._remote_host,SS)[0])
 
 	if ret == 1:
             # it's already here
@@ -92,22 +92,22 @@ def copy_subruns(data):
                # delete whats over there
                obj.info("FORCING OVERWRITE @ %s!"%seb_)
                SS = "rm -rf %s" % dst_file 
-               del_ = int(exec_ssh("vgenty",obj._remote_host,SS)[0])
+               del_ = int(exec_ssh(obj._user,obj._remote_host,SS)[0])
 
            else:
                # confirm the copied files is the same number of bytes, else we have to try again
                obj.info("Confirm the copied size @ remote location")
                SS = "stat -c %%s %s" % dst_file
-               dst_fsize = int(exec_ssh("vgenty",obj._remote_host,SS)[0])
+               dst_fsize = int(exec_ssh(obj._user,obj._remote_host,SS)[0])
                
                SS = "stat -c %%s %s" % fname
-               org_fsize = int(exec_ssh("vgenty",seb_,SS)[0])
+               org_fsize = int(exec_ssh(obj._user,seb_,SS)[0])
                
                if dst_fsize != org_fsize:
                    # delete whats over there
                    obj.error("Subrun %s could not be copied to seb %s... reinserting"%(subrun_,seb_))
                    SS = "rm -rf %s" % dst_file
-                   del_ = int(exec_ssh("vgenty",obj._remote_host,SS)[0])
+                   del_ = int(exec_ssh(obj._user,obj._remote_host,SS)[0])
                    
                    valid_subruns.append(subrun_)
 
@@ -121,8 +121,8 @@ def copy_subruns(data):
         # copy
         #
         obj.info(" ==> Copying @ %s..."%seb_)
-        SS = "nice -19 ionice -c3 scp %s vgenty@%s:%s" % (fname,obj._remote_host,dst_dir) 
-        ret = exec_ssh("vgenty",seb_,SS)
+        SS = "nice -19 ionice -c3 scp %s %s@%s:%s" % (fname,obj._user,obj._remote_host,dst_dir) 
+        ret = exec_ssh(obj._user,seb_,SS)
         obj.info(" ==> Copied @ %s..."%seb_)
 
         #
@@ -130,10 +130,10 @@ def copy_subruns(data):
         #
 	obj.info("Confirm the copied size @ remote location")
         SS = "stat -c %%s %s" % dst_file
-        dst_fsize = int(exec_ssh("vgenty",obj._remote_host,SS)[0])
+        dst_fsize = int(exec_ssh(obj._user,obj._remote_host,SS)[0])
 	
         SS = "stat -c %%s %s" % fname
-        org_fsize = int(exec_ssh("vgenty",seb_,SS)[0])
+        org_fsize = int(exec_ssh(obj._user,seb_,SS)[0])
 	
         #
         # is it the same size?
@@ -143,7 +143,7 @@ def copy_subruns(data):
 
 	    # delete whats over there
             SS = "rm -rf %s" % dst_file
-            del_ = int(exec_ssh("vgenty",obj._remote_host,SS)[0])
+            del_ = int(exec_ssh(obj._user,obj._remote_host,SS)[0])
 	    
 	    valid_subruns.append(subrun_)
         else:
@@ -187,8 +187,12 @@ class monitor_snova( ds_project_base ):
         self._max_occupancy = float(0.0)
         self._drain_file = str("")
         self._user = str("")
+
+        self._deletion_user = str("uboonedaq")
+
 	self.get_resource()
-        
+
+
     #
     # fill class members from hstore
     #
@@ -211,12 +215,14 @@ class monitor_snova( ds_project_base ):
 
         self._file_destination = str(resource['FILE_DESTINATION'])
 
-        if resource['IGNORE_RUNS'] != "":
-            self._ignore_runs = [int(r_) for r_ in resource['IGNORE_RUNS'].split("-")]
+        # if resource['IGNORE_RUNS'] != "":
+        #     self._ignore_runs = [int(r_) for r_ in resource['IGNORE_RUNS'].split("-")]
+
+        self._ignore_runs = [int(0)]
 
 	self._lock_file = resource['LOCK_FILE']
         
-        self._user = "vgenty"
+        self._user = "uboonepro"
 
         self._drain_file = resource['DRAIN_FILE']
 
@@ -370,17 +376,21 @@ class monitor_snova( ds_project_base ):
                     SD += "\"" + sd + "\""
                     SD += " "
                 SS = "for f in %s; do nice -19 ionice -c3 rm -rf $f; done" % str(SD)
-                ret = exec_ssh("root",seb_,SS)
+                ret = exec_ssh(self._deletion_user,seb_,SS)
 
             # get this sebs project table and remove the deleted runs
 	    runtable = "%s_%s"%(self._parent_prefix,seb_)
             self.info("... removing %s %d \n%s"%(runtable,run,str(valid_subruns)))
 	    rundbWriter.star_destroyer(runtable,run,valid_subruns);
 
+            self.info("done star_destoyer @ table=%s" % runtable)
+
             # get this sebs master runtable and remove the deleted runs
 	    runtable = "%s_%s"%(self._fragment_prefix,seb_)
+            self.info("... removing %s %d \n%s"%(runtable,run,str(valid_subruns)))
 	    rundbWriter.star_destroyer(runtable,run,valid_subruns);
-	    self.info("done")
+
+	    self.info("done star_destoyer @ table=%s" % runtable)
             
         return
 
@@ -411,7 +421,10 @@ class monitor_snova( ds_project_base ):
 
 	    self._locked = False
 	    return
-	
+
+	# set the lock
+        self._locked = True
+
 	# read the lock file
 	data = None
 	with open(self._lock_file,'r') as lf_:
@@ -488,7 +501,7 @@ class monitor_snova( ds_project_base ):
 	with open(self._lock_file,'w+') as lf_:
             json.dump(data,lf_)
 
-	self._locked = True
+	self._locked = False
 	return
 
 if __name__ == '__main__':

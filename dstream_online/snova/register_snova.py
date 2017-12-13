@@ -1,4 +1,4 @@
-import os, sys
+import time, os, sys, json
 import time,subprocess
 from pub_dbi import DBException, pubdb_conn_info
 from pub_util import pub_logger
@@ -169,6 +169,15 @@ class register_snova(ds_project_base):
             return
 
         self._locked = True
+
+	# read the lock file
+	data = None
+	with open(self._lock_file,'r') as lf_:
+            data = json.load(lf_)
+
+	# if its transfered, unlock
+	if data['transfered'] == True:
+            self._locked = False
 
         self.info("Lock exists. Current state: %r" % self._locked)
 

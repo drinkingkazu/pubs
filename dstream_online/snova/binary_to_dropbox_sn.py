@@ -158,9 +158,15 @@ class binary_to_dropbox( ds_project_base ):
     def process_files(self, in_file_v, in_json_v):
 
         mp = ds_multiprocess(self._project)
+        # cmd_template  = ""
+        # cmd_template += "scp %s vgenty@" + self._remote_host + ":/nashome/v/vgenty/tmp ; "
+        # cmd_template += "ssh -T -x vgenty@" + self._remote_host + " "
+        # cmd_template += "'source /nashome/v/vgenty/setupsam.sh 1>/dev/null 2>/dev/null; "
+        # cmd_template += "ifdh cp /nashome/v/vgenty/tmp/%s %s;"
+        # cmd_template += "ifdh cp %s %s; '"
         cmd_template  = ""
-        cmd_template += "scp %s vgenty@" + self._remote_host + ":/nashome/v/vgenty/tmp ; "
-        cmd_template += "ssh -T -x vgenty@" + self._remote_host + " "
+        cmd_template += "scp %s uboonepro@" + self._remote_host + ":/nashome/v/vgenty/tmp ; "
+        cmd_template += "ssh -T -x uboonepro@" + self._remote_host + " "
         cmd_template += "'source /nashome/v/vgenty/setupsam.sh 1>/dev/null 2>/dev/null; "
         cmd_template += "ifdh cp /nashome/v/vgenty/tmp/%s %s;"
         cmd_template += "ifdh cp %s %s; '"

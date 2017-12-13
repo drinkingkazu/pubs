@@ -10,7 +10,7 @@ from dstream import ds_project_base
 from dstream import ds_status
 from dstream import ds_multiprocess
 from ds_online_util import *
-from snova_util import *
+from dstream_online.snova.snova_util import *
 from collections import OrderedDict
 import subprocess
 
@@ -73,7 +73,7 @@ class construct_filename( ds_project_base ):
     
 	# ask for files in the snova directory (the return is unsorted)
         SS="nice -19 ionice -c3 ls -f -1 %s" % datadir
-        dir_flist = exec_ssh("vgenty",self._seb,SS)[2:]
+        dir_flist = exec_ssh("uboonedaq",self._seb,SS)[2:]
         file_map = OrderedDict()
         
         # make the file map

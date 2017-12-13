@@ -261,7 +261,7 @@ class get_metadata( ds_project_base ):
                 run_type='unknown'
                 
             SS= "stat -c %%s %s" %in_file
-            file_size = long(exec_ssh("vgenty",self._remote_host,SS)[0])
+            file_size = long(exec_ssh("uboonepro",self._remote_host,SS)[0])
 
             run, subrun = runid_v[index_run]
 

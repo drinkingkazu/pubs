@@ -53,7 +53,7 @@ def query_seb_snova_size(seb_ids,seb_names):
         seb_size_v = [0.0]*len(seb_ids)
 
         for ix,seb in enumerate(seb_names):
-            ret_ = exec_ssh("root",seb,"nice -19 ionice -c3 df /datalocal/")
+            ret_ = exec_ssh("uboonedaq",seb,"nice -19 ionice -c3 df /datalocal/")
             size_, used_, unused_ = ret_[-1].split(" ")[6:9]
             seb_size_v[ix] = float(used_) / float(size_)
         

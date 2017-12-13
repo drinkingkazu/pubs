@@ -72,12 +72,12 @@ case `uname -n` in
             (ubdaq-prod-smc*)
 		export KRB5CCNAME=FILE:/tmp/krb5cc_uboonepro_smc;
 		setup uboonecode v04_26_00 -q prof:e7;
-                setup sam_web_client;
-                setup ifdhc v1_8_2 -q e7:p279:prof;
-                setup pyqtgraph;
-                setup postgresql v9_3_6 -q p279;
+	        setup sam_web_client;
+		setup ifdhc v1_8_2 -q e7:p279:prof;
+		setup pyqtgraph;
+		setup postgresql v9_3_6 -q p279;
 		#setup psycopg2 v2_5_4
-                setup uboonedaq_datatypes v6_19_00c -q e7:prof;
+	        setup uboonedaq_datatypes v6_19_00c -q e7:prof;
                 export PUB_DAEMON_LOG_MODULE=dstream_online.smc_logger;
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.smc_handler;
                 ;;
