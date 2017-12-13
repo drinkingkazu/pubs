@@ -368,7 +368,68 @@ class get_metadata( ds_project_base ):
 
             out,err = mp.communicate(index_run)
             fsize = os.path.getsize(in_file)
+
+            # Add logic here to parse the error returned from the command to look for "terminate"
+            # Check if the file size is less than 32 MB
+            # if both of those are true, terminate processing this file
+            # run all the functions of fix_failed_metadata_gen_files.sh
+
             run,subrun = runid_v[index_run]
+            IncompleteFileBoolean = False
+            for line in err.split('\n'):
+
+                if "Aborted" in line and int(fsize) < 32000000:
+
+                    self.warning(line)
+                    self.warning(int(fsize))
+                    self.warning('The file %s does not contain any complete events and is being marked for deletion.' % (os.path.basename(in_file)) )
+                    self.log_status( ds_status( project = "prod_register_binary_evb",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 0 ) )
+                    self.log_status( ds_status( project = "prod_transfer_binary_evb2dropbox_evb",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 1002 ) )
+                    self.log_status( ds_status( project = "prod_verify_binary_evb2dropbox_near1",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 1004 ) )
+                    self.log_status( ds_status( project = "prod_transfer_binary_evb2near1_near1",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 1006 ) )
+                    self.log_status( ds_status( project = "prod_transfer_binary_near12dropbox_near1",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 1006 ) )
+                    self.log_status( ds_status( project = "prod_verify_binary_near12dropbox_near1",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 1006 ) )
+                    self.log_status( ds_status( project = "prod_clean_near_binary_near1",
+                                                run     = run,
+                                                subrun  = subrun,
+                                                seq     = 0,
+                                                status  = 1006 ) )
+                                        
+                    status_v[index_run] = (0,None)
+                    #self.warning( 'Break Point 1:IncompleteFileBoolean is set to %s' % str(IncompleteFileBoolean))
+                    IncompleteFileBoolean = True
+                    break #stops the processing of the err output from dumpEventHeaders
+
+            #self.warning('Break point 2: IncompleteFileBoolean is set to %s' % str(IncompleteFileBoolean))
+            if (IncompleteFileBoolean) :
+
+                self.warning('Finished procesing that file and moving on to the next!')
+                continue   # stops the processing of this run,subrun since we already know that the file is junk
+                           #This files is DEAD TO ME!!!! - Kirby, Dec 13, 2017
 
             checksum = ''
             if checksum_v:
