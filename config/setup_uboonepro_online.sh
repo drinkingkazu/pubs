@@ -81,6 +81,21 @@ case `uname -n` in
                 export PUB_DAEMON_LOG_MODULE=dstream_online.smc_logger;
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.smc_handler;
                 ;;
+            (ubdaq-prod-ws02*)
+	        export PUB_PSQL_READER_DB=procdb_sn
+		export PUB_PSQL_WRITER_DB=procdb_sn
+		export PUB_PSQL_ADMIN_DB=procdb_sn
+		export KRB5CCNAME=FILE:/tmp/krb5cc_uboonepro_smc;
+		setup uboonecode v04_26_00 -q prof:e7;
+	        setup sam_web_client;
+		setup ifdhc v1_8_2 -q e7:p279:prof;
+		setup pyqtgraph;
+		setup postgresql v9_3_6 -q p279;
+		#setup psycopg2 v2_5_4
+	        setup uboonedaq_datatypes v6_19_00c -q e7:prof;
+                export PUB_DAEMON_LOG_MODULE=dstream_online.ws02_logger;
+                export PUB_DAEMON_HANDLER_MODULE=dstream_online.ws02_handler;
+                ;;
             (ubdaq-prod-evb*)
 	        setup uboonecode v04_26_00 -q prof:e7;
 	        setup uboonedaq_datatypes v6_19_00c -q e7:prof;
