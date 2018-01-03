@@ -103,6 +103,9 @@
   <!-- Run Number -->
   <runnumber>REP_RUN_NUMBER</runnumber>
 
+  <!-- Validate on worker -->
+  <check>1</check>
+
   <!-- Project stages -->
 
   <stage name="anatree">
@@ -117,6 +120,21 @@
     <anadefname>&prod_mode;_anatree_PUBS_XMLVAR_STREAM_&prod_version;_&run_tag;</anadefname>
     <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
     <jobsub>--expected-lifetime=short --subgroup=prod</jobsub>
+    <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
+  </stage>
+
+  <stage name="larcv">
+    <inputdef>&prod_mode;_reco2_PUBS_XMLVAR_STREAM_&prod_version;_mcc8</inputdef>
+    <fcl>standard_larcv_uboone_data.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/uboonepro/larcv/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</outdir>
+    <logdir>/pnfs/uboone/scratch/uboonepro/larcv/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</logdir>
+    <workdir>/pnfs/uboone/scratch/uboonepro/work/larcv/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</workdir>
+    <bookdir>/uboone/data/uboonepro/book/larcv/&release;/&prod_mode;_&name;_&prod_version;/reco_PUBS_XMLVAR_STREAM_&run_tag;</bookdir>
+    <numjobs>100</numjobs>
+    <anadatatier>lar%</anadatatier>
+    <anadefname>&prod_mode;_larlitecv_PUBS_XMLVAR_STREAM_&prod_version;_&run_tag;</anadefname>
+    <maxfilesperjob>PUBS_XMLVAR_MAXFILESPERJOB</maxfilesperjob>
+    <jobsub>--expected-lifetime=long --subgroup=prod</jobsub>
     <jobsub_start>--expected-lifetime=short --subgroup=prod</jobsub_start>
   </stage>
 
