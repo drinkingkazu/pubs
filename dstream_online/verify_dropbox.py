@@ -251,14 +251,14 @@ class verify_dropbox( ds_project_base ):
                 self.error('Failed to find the file for (run,subrun) = %s @ %s !!!' % (run,subrun))
                 self.set_verify_status( run     = run,
                                         subrun  = subrun,
-                                        status  = kSTATUS_ERROR_FILE_NOT_FOUND )
+                                        status  = kSTATUS_ERROR_INPUT_FILE_NOT_FOUND )
                 continue
 
             if (len(filelist)>1):
                 self.error('Found too many files for (run,subrun) = %s @ %s !!!' % (run,subrun))
                 self.set_verify_status( run     = run,
                                         subrun  = subrun,
-                                        status  = kSTATUS_ERROR_FILE_NOT_UNIQUE )
+                                        status  = kSTATUS_ERROR_INPUT_FILE_NOT_UNIQUE )
 
             in_file = filelist[0]
             in_file_name = os.path.basename(in_file)

@@ -23,7 +23,10 @@ class dummy_nubin_xfer(ds_project_base):
     _project = 'dummy_nubin_xfer'
 
     ## @brief default ctor can take # runs to process for this instance
-    def __init__(self):
+    def __init__(self,project_name):
+
+        if project_name:
+            self._project = project_name
 
         # Call base class ctor
         super(dummy_nubin_xfer,self).__init__()
@@ -199,8 +202,13 @@ class dummy_nubin_xfer(ds_project_base):
 # A unit test section
 if __name__ == '__main__':
 
-    test_obj = dummy_nubin_xfer()
-
+    import sys
+    test_obj = None
+    if len(sys.argv)>1:
+        test_obj = dummy_nubin_xfer(sys.argv[1])
+    else:
+        test_obj = dummy_nubin_xfer()
+        
     test_obj.process_newruns()
 
     test_obj.error_handle()

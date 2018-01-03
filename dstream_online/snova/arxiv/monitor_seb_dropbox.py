@@ -1,37 +1,27 @@
-## @namespace dummy_dstream.dummy_daq
-#  @ingroup dummy_dstream
-#  @brief Defines a project dummy_daq
-#  @author kazuhiro
-
 # python include
 import time,os
-# pub_dbi package include
 from pub_dbi import DBException
-# dstream class include
 from dstream import DSException
 from dstream import ds_project_base
 from dstream import ds_status
 
-## @class dummy_daq
-#  @brief A fake DAQ process that makes a fake nu bin file.
-#  @details
-#  This dummy project creates dummy nu bin data file under $PUB_TOP_DIR/data directory
-class dummy_daq(ds_project_base):
+class monitor_seb_dropbox(ds_project_base):
 
     # Define project name as class attribute
-    _project = 'dummy_daq'
+    _project = 'monitor_seb_dropbox'
 
     ## @brief default ctor can take # runs to process for this instance
-    def __init__(self,project_name):
-
-        if project_name:
-            self._project = project_name
+    def __init__(self, arg=''):
 
         # Call base class ctor
-        super(dummy_daq,self).__init__()
+        super(monitor_seb_dropbox,self).__init__( arg )
 
-        self._out_file_format = ''
-        self._out_dir = ''
+        self._project = arg
+        
+        self._snova_file_format = ''
+
+        self._dbox_dir = ''
+        
         self._nruns   = None
 
     ## @brief access DB and retrieves new runs
@@ -48,9 +38,10 @@ class dummy_daq(ds_project_base):
             resource = self._api.get_resource(self._project)
 
             self._nruns = int(resource['NRUNS'])
-            self._out_dir = '%s/%s' % (os.environ['PUB_TOP_DIR'],resource['OUTDIR'])
-            self._outfile_format = resource['OUTFILE_FORMAT']
-
+            self._dbox_dir = str(resource['DATADIR'])
+            self._snova_file_format = str(resource['FILEFMT'])
+            self._max_dir_size = int(resource['MAXBYTES'])
+            
         ctr = self._nruns
         for x in self.get_runs(self._project,1):
 
@@ -63,19 +54,25 @@ class dummy_daq(ds_project_base):
             # Report starting
             self.info('processing new run: run=%d, subrun=%d ...' % (run,subrun))
 
-            f = open('%s/%s' % (self._out_dir, self._outfile_format % (run,subrun)),'w')
-            f.write('Dummy data for run %d, subrun %d' % (run,subrun))
-            f.close()
+            infile=os.path.join(self._dbox_dir,self._snova_file_format%(run,subrun))
 
-            # Pretend I'm doing something
-            time.sleep(1)
+            cmd="mv %s %s"%(infile,self._out_dir)
+            self.info(cmd)            
+            
+            os.system( cmd )
 
-            # Create a status object to be logged to DB (if necessary)
+            # Pretend this file is large and it's taking me 5 seconds to transfer, not
+            # inconceivable for pnfs transfer time
+            
+            time.sleep(5)
+
+            # log it in personal db... but hey, it's not validated yet
             status = ds_status( project = self._project,
                                 run     = run,
                                 subrun  = subrun,
                                 seq     = 0,
-                                status  = 2 )
+                                status  = 2)
+
             
             # Log status
             self.log_status( status )
@@ -84,22 +81,12 @@ class dummy_daq(ds_project_base):
             if not ctr: break
 
 
-    ## @brief access DB and validate finished runs
     def validate(self):
 
         # Attempt to connect DB. If failure, abort
         if not self.connect():
-	    self.error('Cannot connect to DB! Aborting...')
-	    return
-
-        # If resource info is not yet read-in, read in.
-        if self._nruns is None:
-
-            resource = self._api.get_resource(self._project)
-
-            self._nruns = int(resource['NRUNS'])
-            self._out_dir = '%s/%s' % (os.environ['PUB_TOP_DIR'],resource['OUTDIR'])
-            self._outfile_format = resource['OUTFILE_FORMAT']
+            self.error('Cannot connect to DB! Aborting...')
+            return
 
         ctr = self._nruns
         for x in self.get_runs(self._project,2):
@@ -109,26 +96,37 @@ class dummy_daq(ds_project_base):
 
             run    = int(x[0])
             subrun = int(x[1])
-            status = 0
-            if os.path.isfile('%s/%s' % (self._out_dir, self._outfile_format % (run,subrun))):
 
-                self.info('validated run: run=%d, subrun=%d ...' % (run,subrun))
+            status = 0
+
+            filename=self._snova_file_format%(run,subrun))
+            file_ = os.path.join(self._dbox_dir,filename)
+
+            if os.path.isfile( outfile ):
+
+                cmd="rm -rf %s"%infile
+
+                os.system(cmd)
                 
+                self.info('validated run: run=%d, subrun=%d ...' % (run,subrun))
+                self.info(cmd)
+
             else:
 
                 self.error('error on run: run=%d, subrun=%d ...' % (run,subrun))
 
                 status = 1
 
-            # Pretend I'm doing something
-            time.sleep(1)
+            # Pretend I'm doing something!
+            time.sleep(0.5)
 
             # Create a status object to be logged to DB (if necessary)
             status = ds_status( project = self._project,
                                 run     = run,
                                 subrun  = subrun,
                                 seq     = 0,
-                                status  = status )
+                                status  = status,
+                                data    = outfile)
             
             # Log status
             self.log_status( status )
@@ -139,16 +137,13 @@ class dummy_daq(ds_project_base):
 # A unit test section
 if __name__ == '__main__':
 
-    import sys
-    test_obj = None
-    if len(sys.argv)>1:
-        test_obj = dummy_daq(sys.argv[1])
-    else:
-        test_obj = dummy_daq()
+    proj_name = "monitor_seb_dropbox_%s"%sys.argv[1]
+    
+    cock_obj = monitor_seb_dropbox( proj_name )
 
-    test_obj.process_newruns()
+    cock_obj.process_newruns()
 
-    test_obj.validate()
+    cock_obj.validate()
 
 
 

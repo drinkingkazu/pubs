@@ -171,6 +171,35 @@ class ds_reader(pubdb_reader):
         if not res: return -1
         
         return int(res[0])
+    
+
+    ## Function to get earliest run
+    def get_earliest_runs(self,table):
+
+        query = 'SELECT DISTINCT RunNumber FROM %s ORDER BY RunNumber' % table
+        
+        if not self.execute(query):
+            return -1
+
+        res = self.fetchall()
+
+        if not res: return -1
+        
+        return res
+
+    ## Function to get earliest run
+    def get_subruns(self,table,runnumber,limit=100):
+        
+        query = 'SELECT SubRunNumber FROM %s WHERE RunNumber=%d ORDER BY SubRunNumber LIMIT %d' % (table,runnumber,limit)
+
+        #print query
+
+        if not self.execute(query):
+            return []
+        res = self.fetchall()
+        if not res: return []
+        return [int(r[0]) for r in res]
+
 
     ## Function to get latest subrun
     def get_last_subrun(self,table,run):
@@ -246,6 +275,8 @@ class ds_reader(pubdb_reader):
 
         query = query % (info._project, info._run, info._subrun, info._seq)
 
+        #print query
+
         if not self.execute(query):
             self._logger.error('Failed querying project status')
             return info
@@ -262,7 +293,7 @@ class ds_reader(pubdb_reader):
         try:
             info._status = int(status)
         except Exception:
-            self._logger.error('Retrieved status is non-integer: %s' % status)
+            self._logger.error('Retrieved status is non-integer: %s data was %s' % (status,data))
             raise Exception
         info._data   = data
         return info
@@ -334,7 +365,7 @@ class ds_reader(pubdb_reader):
     # Upon success, the underneath psycopg2 cursor contains returned rows.\n
     # If you are writing a project implementation class, see ds_proc_base.
     def get_xtable_runs(self,table_v, status_v, new_to_old=True):
-
+        
         if not isinstance(table_v,list) or not isinstance(status_v,list):
             self._logger.critical('Invalid input data type!')
             raise DSException()
@@ -360,7 +391,7 @@ class ds_reader(pubdb_reader):
         query_status += ']'
 
         query = 'SELECT Run, SubRun FROM GetRuns(%s,%s);' % (query_table,query_status)
-
+        
         runs = []
         if not self.execute(query): return runs
         
@@ -466,12 +497,13 @@ class ds_reader(pubdb_reader):
         
         # handle resource string conversion into a map
         if x[8]:
-        
+            
             for y in x[8].split(','):
         
                 tmp = y.split("=>")
-                
-                exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+
+                #exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+                exec('resource[%s]=%s' % (tmp[0],str(tmp[1])))
 
         return ds_project(project  = project,
                           command  = x[0],
@@ -509,7 +541,8 @@ class ds_reader(pubdb_reader):
 
                     tmp = y.split("=>")
 
-                    exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+                    #exec('resource[%s]=%s' % (tmp[0],tmp[1]))
+                    exec('resource[%s]=%s' % (tmp[0],str(tmp[1])))
 
             info_array.append( ds_project( project  = x[0],
                                            command  = x[1],
@@ -1137,6 +1170,85 @@ class death_star(ds_master):
 
         return result
 
+    # Clear death star
+    def clear_death_star(self,tablename):
+        self._logger.warning("Attempting to clear death star %s" % tablename)
+
+        query = 'SELECT 1 FROM %s LIMIT 1' % tablename;
+        
+        result = self.execute(query)
+        res = self.fetchone()
+
+        if res is None:
+           self._logger.warning("New run table %s is already empty." % tablename)
+           return 2
+
+	query = 'SELECT ClearTestRunTable(\'%s\');' % tablename
+	result = self.commit(query)
+	
+	if result:
+	    self._logger.warning("Cleared.")
+            res = 1
+	else:
+	    self._logger.warning("Failed.")
+            res = 0
+            
+        return res
+
+    # Duplicate one run table to another		
+    def duplicate_death_star(self,tablename,newtablename):
+	
+	self._logger.warning("Attempting to duplicate a death star from %s to %s" % (tablename,newtablename) )
+        query = 'SELECT DuplicateTestRunTable(\'%s\',\'%s\');' % ( tablename, newtablename)
+	
+	result = self.commit(query)
+	
+	if result:
+	    self._logger.warning('New run table %s is created.' % newtablename)
+	else:
+	    self._logger.warning('Failed.')
+            
+        return result
+
+    # Copy one run table to another		
+    def copy_death_star(self,tablename,newtablename,selected_runs=None):
+	
+	self._logger.warning("Attempting to copy a death star from %s to %s" % (tablename,newtablename) )
+        query = 'SELECT 1 FROM %s LIMIT 1' % newtablename;
+        
+        result = self.execute(query)
+        res = self.fetchone()
+
+        if res is not None:
+           self._logger.warning("New run table %s is already filled." % newtablename)
+           return 2
+        if selected_runs == None:
+            query = 'SELECT CopyTestRunTable(\'%s\',\'%s\');' % ( tablename, newtablename )
+        else : 
+
+            assert type(selected_runs) is list
+            query_runs = ''
+            for index in xrange(len(selected_runs)):
+                if index==0:
+                    query_runs += 'ARRAY[%d::INT' % selected_runs[index]
+                else:
+                    query_runs += (',%d::INT' % selected_runs[index] )
+            query_runs += ']'
+
+            query = 'SELECT CopySomeTestRunTable(\'%s\',\'%s\',%s);' % (tablename, newtablename,query_runs)
+	
+	result = self.commit(query)
+
+	if result:
+	    self._logger.warning('New run table %s is filled.' % newtablename)
+            res = 1
+	else:
+	    self._logger.warning('Failed.')
+            res = 0
+
+
+        return res
+
     ## @brief Fill Anakin the absolute power of dark-side
     #  @details
     #  Recreate a run table of the specified name, filled with run/subruns. It fails if any project is currently using this table.
@@ -1200,8 +1312,9 @@ class death_star(ds_master):
         result = self.commit(query)
         
         if result:
-
-            self._logger.warning('Thank you. Death Star became 1 run bigger.')
+            
+            #self._logger.warning('Thank you. Death Star became 1 run bigger.')
+            pass
 
         else:
 
@@ -1211,25 +1324,34 @@ class death_star(ds_master):
 
     ## @brief Remove a specific run/subrun combination from the DB
     #  @details Remove a specific run/subrun combination from both the run and project status table
-    def star_destroyer(self, runtable, run, subrun, age_of_church):
+    def star_destroyer(self, runtable, run, subrun=None, age_of_church=None):
 
         if not age_of_church == pub_env.kAGE_OF_CHURCH:
+            pass
+            #self._logger.error('A star destroyer cannot ship out w/o Church')
+            #return False
+        query = ''
+        if type(subrun) is int:
+            query = 'Select RemoveRun(\'%s\',%d,%d);' % (runtable,run,subrun)
+        elif type(subrun) is list:
+            query_subruns = ''
+            for index in xrange(len(subrun)):
+                if index==0:
+                    query_subruns += 'ARRAY[%d::INT' % subrun[index]
+                else:
+                    query_subruns += (',%d::INT' % subrun[index] )
+            query_subruns += ']'
 
-            self._logger.error('A star destroyer cannot ship out w/o Church')
-
-            return False
-
-        query = 'Select RemoveRun(\'%s\',%d,%d);' % (runtable,run,subrun)
-
+            query = 'Select RemoveSubRuns(\'%s\',%d,%s);' % (runtable,run,query_subruns)
+        else:
+            self._logger.error('Subrun was not a list.')
 
         result = self.commit(query)
 
         if result:
-
             self._logger.warning('Star Destroyer is shipped your way with FedEx ground.')
 
         else:
-
             self._logger.warning('Sorry. Your credit card was not accepted.')
 
         return result
