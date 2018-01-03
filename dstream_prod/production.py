@@ -803,12 +803,12 @@ class production(ds_project_base):
 
         # Do check.
         try:
-            self.info('Invoking project.doshorten')
+            #self.info('Invoking project.doshorten')
             real_stdout = sys.stdout
             real_stderr = sys.stderr
             sys.stdout = StringIO.StringIO()
             sys.stderr = StringIO.StringIO()
-            project.doshorten(stobj)
+            #project.doshorten(stobj)
             check_status = 0
             if self._check[istage]:
                 self.info('Invoking project.docheck for artroot files')
@@ -1325,13 +1325,14 @@ Job IDs    : %s
                     loc_status = 0
                 else:
                     self.info('Artroot file does not have a location.')
+            if nfile >= self._store[istage] + self._add_location[istage]:
+                loc_status = 0
             if nfile == 0:
                 loc_status = 0
 
         loc_status_ana = 0
         if self._storeana[istage] or self._add_location_ana[istage]:
             nfile_ana = 0
-            loc_status_ana = 1
             dim = project_utilities.dimensions(probj, stobj, ana=True)
             filelist = samweb.listFiles(dimensions=dim, stream=True)
             while 1:
@@ -1354,9 +1355,11 @@ Job IDs    : %s
                     break
                 if has_location:
                     self.info('Analysis file has location.')
-                    loc_status_ana = 0
                 else:
+                    loc_status_ana = 1
                     self.info('Analysis file does not have a location.')
+            if nfile_ana >= self._storeana[istage] + self._add_location_ana[istage]:
+                loc_status_ana = 0
             if nfile_ana == 0:
                 loc_status_ana = 0
 

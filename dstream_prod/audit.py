@@ -421,6 +421,7 @@ for proj_info in proj_infos:
                             print subrun_dim
 
                             # If fix requested, set status back to 1.
+			    #CHANGE: Make the status changeable to 10 or 20
 
                             if fix:
                                 update_query = 'update %s set status=1 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
@@ -477,6 +478,14 @@ for proj_info in proj_infos:
                                 print '***Error no location for run %d, subrun %d' % (run, subrun)
                                 print file
                                 print 'Xml = %s' % xml
+
+                                # If fix requested, set status back to 8.
+
+                                if fix:
+                                    update_query = 'update %s set status=8 where run=%d and subrun=%d and status=%d' % (table, run, subrun, status)
+                                    ok = dbi.commit(update_query)
+                                    if ok:
+                                        print 'Status reset to 8.'
                                 continue
                             else:
                                 print 'Location OK.'
@@ -540,6 +549,12 @@ for proj_info in proj_infos:
                                 ok = dbi.commit(update_query)
                                 if ok:
                                     print 'Reswizzle run %d, subrun %d' % (run, subrun)
+
+                            elif fix and status == 1 and project_name.startswith('prod_filter_merge'):
+                                update_query = 'update %s set status=1 where run=%d and subrun=%d' % (parent, run, subrun)
+                                ok = dbi.commit(update_query)
+                                if ok:
+                                    print 'Reprocess run %d, subrun %d' % (run, subrun)
 
                             continue
 

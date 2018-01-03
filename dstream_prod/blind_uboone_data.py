@@ -113,6 +113,7 @@ elif data_tier=="swizzled" :
         raise Exception('Unable to get list of files for this query:' + query)
 elif data_tier=="reco" :
     query = run_limit_str + " and file_type data and data_tier reco% and file_format artroot and file_name Phys% and ub_project.name %reco_outbnb%" + open_run_list
+#    query = run_limit_str + " and file_type data and data_tier reco% and file_format artroot and file_name Phys% and isdescendantof:(data_stream outbnb)" + open_run_list
     try:
         list_o_files=samweb.listFiles(query)
     except:

@@ -55,100 +55,35 @@ html.write('<p>Updated %s</p>\n' % update_time)
 
 nactive = 0
 try:
-    f = open('/web/sites/www-microboone.fnal.gov/htdocs/at_work/AnalysisTools/active_projects_summary.txt')
+    f = open('/web/sites/m/microboone-exp.fnal.gov/htdocs/at_work/AnalysisTools/active_projects_summary.txt')
     nactive = int(f.readline())
 except:
     pass
 
-# Generate daemon status.
-
-daemons = ('uboonegpvm01.fnal.gov',
-           'uboonegpvm02.fnal.gov',
-           'uboonegpvm03.fnal.gov',
-           'uboonegpvm04.fnal.gov',
-           'uboonegpvm05.fnal.gov',
-           'uboonegpvm06.fnal.gov',
-           'uboonegpvm07.fnal.gov',
-           'uboonepubsgpvm01.fnal.gov',
-           'uboonepubsgpvm02.fnal.gov',
-           'uboonepubsgpvm03.fnal.gov',
-           'uboonepubsgpvm04.fnal.gov',
-           'uboonepubsgpvm05.fnal.gov',
-           'uboonepubsgpvm06.fnal.gov')
-
-
-html.write('<table style="width:300px; display:inline-block">')
-html.write('<caption><strong>Daemons</strong></caption>')
-
-# Loop over daemons.
-
-for daemon in daemons:
-    color = 'black'
-    status = 'Unknown'
-
-    # Check if daemon is exists.
-
-    if dbi.daemon_exist(daemon):
-
-        # Check if daemon is enabled.
-
-        if not dbi.daemon_info(daemon)._enable:
-
-            # Daemon is disabled.
-
-            color = 'blue'
-            status = 'Disabled'
-
-        else:
-
-            # Daemon is enabled.
-            # Check if daemon is running.
-
-            command = ['ssh', daemon, 'ps', 'aux']
-            try:
-                lines = subprocess.check_output(command).splitlines()
-                color = 'red'
-                status = 'Stopped'
-                for line in lines:
-                    if line.find('python') >= 0 and line.find('daemon.py') >= 0:
-                        status = 'Running'
-                        color = 'green'
-            except:
-                color = 'black'
-                status = 'Unknown'
-
-    html.write('<tr bgcolor=#ffffe0>\n')
-    html.write('<td>%s</td>\n' % daemon)
-    html.write('<td><font color="%s">%s</font></td>\n' % (color, status))
-    html.write('</tr>\n')
-html.write('<tr><td colspan=2><a href=http://www-microboone.fnal.gov/at_work/AnalysisTools/logcheck.txt>Check logs</a></td></tr>')
-html.write('<tr><td colspan=2>%d <a href=http://www-microboone.fnal.gov/at_work/AnalysisTools/active_projects.txt>active sam projects</a></td></tr>' % nactive)
-html.write('</table>\n')
-
 # Generate legend.
 
 html.write(
-'''<table style="width:300px; display:inline-block">
+'''<table border=1 style="width:300px; display:inline-block">
 <caption><strong>Legend</strong></caption>
 <tr bgcolor=#ffffe0>
 <td>Complete</td>
-<td nowrap align=left><img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=150></td>
+<td nowrap align=left><img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=150></td>
 </tr>
 <tr bgcolor=#ffffe0>
 <td>Merged</td>
-<td nowrap align=left><img src=http://www-microboone.fnal.gov/images/bar-green.gif height=13 width=150></td>
+<td nowrap align=left><img src=http://microboone-exp.fnal.gov/images/bar-green.gif height=13 width=150></td>
 </tr>
 <tr bgcolor=#ffffe0>
 <td>Processing</td>
-<td nowrap align=left><img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=50><img src=http://www-microboone.fnal.gov/images/bar-orange.gif height=13 width=50><img src=http://www-microboone.fnal.gov/images/bar-purple.gif height=13 width=50></td>
+<td nowrap align=left><img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=50><img src=http://microboone-exp.fnal.gov/images/bar-orange.gif height=13 width=50><img src=http://microboone-exp.fnal.gov/images/bar-purple.gif height=13 width=50></td>
 </tr>
 <tr bgcolor=#ffffe0>
 <td>Waiting</td>
-<td nowrap align=left><img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=150></td>
+<td nowrap align=left><img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=150></td>
 </tr>
 <tr bgcolor=#ffffe0>
 <td>Error</td>
-<td nowrap align=left><img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=150></td>
+<td nowrap align=left><img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=150></td>
 </tr>
 </table>
 ''')
@@ -185,13 +120,13 @@ html.write(
 html.write('<td nowrap>Swizzling</td>\n')
 html.write('<td nowrap align=left>')
 if s1 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
 if s2 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
 if s3 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
 if s4 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
 html.write('</td>\n')
 html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot, 
                                                                          100.*float(n1)/float(ntot),
@@ -246,15 +181,15 @@ for stream in streams:
     html.write('<td nowrap>%s</td>\n' % name)
     html.write('<td nowrap align=left>')
     if s1 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
     if s2 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green.gif height=13 width=%d>' % s2)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green.gif height=13 width=%d>' % s2)
     if s3 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s3)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s3)
     if s4 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
     if s5 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
     html.write('</td>\n')
     html.write('<td nowrap>%d / %d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, n1 + n2, ntot, 
                                                                                   100.*float(n1+n2)/float(ntot),
@@ -296,13 +231,13 @@ html.write(
 html.write('<td nowrap>Swizzling</td>\n')
 html.write('<td nowrap align=left>')
 if s1 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
 if s2 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
 if s3 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
 if s4 != 0:
-    html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+    html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
 html.write('</td>\n')
 html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot, 
                                                                          100.*float(n1)/float(ntot),
@@ -358,15 +293,15 @@ for stream in streams:
     html.write('<td nowrap>%s</td>\n' % name)
     html.write('<td nowrap align=left>')
     if s1 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
     if s2 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green.gif height=13 width=%d>' % s2)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green.gif height=13 width=%d>' % s2)
     if s3 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s3)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s3)
     if s4 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s4)
     if s5 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s5)
     html.write('</td>\n')
     html.write('<td nowrap>%d / %d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, n1 + n2, ntot, 
                                                                                   100.*float(n1+n2)/float(ntot),
@@ -376,11 +311,79 @@ for stream in streams:
 html.write('</table>\n')
 
 
-# Generate progress for reconstruction.
+# Generate progress for MCC8 filtering/reconstruction.
 
 html.write(
 '''<table border bgcolor=#ffffe0>
-<caption><strong>Reconstruction</strong></caption>
+<caption><strong>MCC8 Optical Filter + Reconstruction</strong></caption>
+''')
+
+streams = [(['prod_filter_bnb_data_mcc8_v2'], 'BNB'),
+           (['prod_filter_extbnb_data_mcc8_v2'], 'BNB External')]
+
+for stream in streams:
+    projects = stream[0]
+    name = stream[1]
+    n1 = 0
+    n2 = 0
+    n3 = 0
+    n4 = 0
+    n5 = 0
+    n6 = 0
+    for project in projects:
+        prjdict = dbi.list_xstatus(bad_runs, project)
+        #if not prjdict.has_key(project):
+        #    continue
+        for status, num in prjdict[project]:
+            if status == 10:
+                n1 += num
+            elif status >=2 and status <= 4:
+                n2 += num
+            elif status >=5 and status <= 6:
+                n3 += num
+            elif status >=7 and status <= 9:
+                n4 += num
+            elif status == 1:
+                n5 += num
+            elif status >= 1000:
+                n6 += num
+    ntot = n1 + n2 + n3 + n4 + n5 + n6
+    s1 = int(500. * float(n1) / float(ntot))
+    s2 = int(500. * float(n2) / float(ntot))
+    s3 = int(500. * float(n3) / float(ntot))
+    s4 = int(500. * float(n4) / float(ntot))
+    s5 = int(500. * float(n5) / float(ntot))
+    s6 = int(500. * float(n6) / float(ntot))
+    stot = s1 + s2 + s3 + s4 + s5 + s6
+
+    html.write('<tr bgcolor=#ffffe0>\n')
+    html.write('<td nowrap>%s</td>\n' % name)
+    html.write('<td nowrap align=left>')
+    if s1 != 0:
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+    if s2 != 0:
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+    if s3 != 0:
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
+    if s4 != 0:
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
+    if s5 != 0:
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
+    if s6 != 0:
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
+    html.write('</td>\n')
+    html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
+                                                                             100.*float(n1)/float(ntot),
+                                                                             100.*float(n6)/float(ntot)))
+    html.write('</tr>\n')
+
+html.write('</table>\n')
+
+# Generate progress for MCC7 reconstruction.
+
+html.write(
+'''<table border bgcolor=#ffffe0>
+<caption><strong>Reconstruction (MCC7) </strong></caption>
 ''')
 
 streams = [(['prod_reco_bnb_v5', 'prod_reco_bnb_v5_quietwires'], 'BNB'),
@@ -431,17 +434,17 @@ for stream in streams:
     html.write('<td nowrap>%s</td>\n' % name)
     html.write('<td nowrap align=left>')
     if s1 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
     if s2 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
     if s3 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
     if s4 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
     if s5 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
     if s6 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
     html.write('</td>\n')
     html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
                                                                              100.*float(n1)/float(ntot),
@@ -455,7 +458,7 @@ html.write('</table>\n')
 
 html.write(
 '''<table border bgcolor=#ffffe0>
-<caption><strong>Analysis Tree</strong></caption>
+<caption><strong>Analysis Tree (MCC7)</strong></caption>
 ''')
 
 streams = [(['prod_anatree_bnb_v5', 'prod_anatree_bnb_v5_quietwires'], 'BNB'),
@@ -498,13 +501,13 @@ for stream in streams:
     html.write('<td nowrap>%s</td>\n' % name)
     html.write('<td nowrap align=left>')
     if s1 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
     if s2 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
     if s3 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s3)
     if s4 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s4)
     html.write('</td>\n')
     html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
                                                                              100.*float(n1)/float(max(1, ntot)),
@@ -562,17 +565,17 @@ for stream in streams:
     html.write('<td nowrap>%s</td>\n' % name)
     html.write('<td nowrap align=left>')
     if s1 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
     if s2 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
     if s3 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
     if s4 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
     if s5 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
     if s6 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
     html.write('</td>\n')
     html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
                                                                              100.*float(n1)/float(ntot),
@@ -630,17 +633,17 @@ for stream in streams:
     html.write('<td nowrap>%s</td>\n' % name)
     html.write('<td nowrap align=left>')
     if s1 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-green2.gif height=13 width=%d>' % s1)
     if s2 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-yellow.gif height=13 width=%d>' % s2)
     if s3 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-orange.gif height=13 width=%d>' % s3)
     if s4 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-purple.gif height=13 width=%d>' % s4)
     if s5 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-blue.gif height=13 width=%d>' % s5)
     if s6 != 0:
-        html.write('<img src=http://www-microboone.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
+        html.write('<img src=http://microboone-exp.fnal.gov/images/bar-red.gif height=13 width=%d>' % s6)
     html.write('</td>\n')
     html.write('<td nowrap>%d / %d (%6.2f%% complete, %6.2f%% error)</td>' %(n1, ntot,
                                                                              100.*float(n1)/float(ntot),

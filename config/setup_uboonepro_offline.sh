@@ -65,7 +65,7 @@ export PUB_DAEMON_HANDLER_MODULE=""
 # Server-specific configuration
 #
 case `uname -n` in
-    (*uboonegpvm* | *uboonepubsgpvm*)
+    (*uboonegpvm* | *uboonepubsgpvm* | *uboonetmp* )
 	echo Setting up for uboonegpvm...
 	if [ -z $HOME/.sqlaccess/prod_access.sh ]; then
 	    echo 'Configuration @ gpvm requires \$HOME/.sqlaccess/prod_access.sh!'
@@ -79,18 +79,20 @@ case `uname -n` in
 	#setup uboonecode v04_26_03_01 -q e7:prof # Used till Nov. 30th. 2015
 	#setup uboonecode v04_26_03_02 -q e7:prof
 	case `uname -n` in
+	    (uboonetmp02*)
+	        setup uboonecode v06_26_01_10 -q e10:prof
+	        #setup larbatch v01_32_06
+		;;
 	    (uboonegpvm01*)
 	        #setup uboonecode v05_08_00_05 -q e9:prof
                 #setup ubutil v06_16_00 -q e10:prof
 		#setup larbatch v01_25_00
-	        setup uboonecode v06_26_01_07 -q e10:prof
+	        setup uboonecode v06_26_01_08 -q e10:prof
+	        setup larbatch v01_32_06
 		;;
 	    (uboonegpvm02*)
-	        setup uboonecode v05_08_00_05 -q e9:prof
-                #setup larbatch v01_21_05
-                #setup larbatch v01_23_07
-                setup ubutil v06_16_00 -q e10:prof
-		setup larbatch v01_31_00
+	        setup uboonecode v06_26_01_09 -q e10:prof
+		setup larbatch v01_34_03
 		;;
 	    (uboonegpvm03*)
 	        setup uboonecode v05_08_00_06 -q e9:prof
@@ -102,11 +104,11 @@ case `uname -n` in
 		;;
 	    (uboonegpvm04*)
 	        #setup uboonecode v04_26_04_09 -q e7:prof
-	        setup uboonecode v05_08_00_09 -q e9:prof
+	        setup uboonecode v05_08_00_10 -q e9:prof
                 #setup larbatch v01_23_03
                 #setup larbatch v01_23_07
                 #setup ubutil v06_16_00 -q e10:prof
-		setup larbatch v01_32_04
+		#setup larbatch v01_32_04
 		;;
 	    (uboonegpvm05*)
 	        setup uboonecode v05_08_00_05 -q e9:prof
@@ -116,9 +118,12 @@ case `uname -n` in
 		setup larbatch v01_31_00
 		;;
 	    (uboonegpvm06*)
-	        setup uboonecode v05_08_00_03 -q e9:prof
-                setup ubutil v06_16_00 -q e10:prof
-		setup larbatch v01_32_05
+	        #setup uboonecode v04_26_04_09 -q e7:prof
+	        setup uboonecode v05_08_00_09 -q e9:prof
+                #setup larbatch v01_23_03
+                #setup larbatch v01_23_07
+                #setup ubutil v06_16_00 -q e10:prof
+		setup larbatch v01_32_04
 		;;
             (uboonegpvm07*)
                 #setup uboonecode v05_11_01 -q e9:prof
@@ -140,7 +145,7 @@ case `uname -n` in
                 ;;
 
 	    (uboonepubsgpvm03*)
-	        setup uboonecode v06_26_01_07 -q e10:prof
+	        setup uboonecode v06_26_01_10 -q e10:prof
                 #setup ubutil v06_16_00 -q e10:prof
                 #setup larbatch v01_26_05
                 ;;
@@ -177,6 +182,9 @@ case `uname -n` in
 	export PYTHONPATH=/uboone/app/users/uboonepro/requests/build/lib:$PYTHONPATH
 
 	case `uname -n` in
+	    (uboonetmp0*)
+	        export PUB_LOGGER_FILE_LOCATION=$PUB_TOP_DIR/log/`uname -n`
+		;;
 	    (uboonegpvm0*)
 	        export PUB_LOGGER_FILE_LOCATION=$PUB_TOP_DIR/log/`uname -n`
 		;;
