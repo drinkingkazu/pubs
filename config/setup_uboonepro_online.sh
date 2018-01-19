@@ -86,6 +86,15 @@ case `uname -n` in
 		export PUB_PSQL_WRITER_DB=procdb_sn
 		export PUB_PSQL_ADMIN_DB=procdb_sn
 		export KRB5CCNAME=FILE:/tmp/krb5cc_uboonepro_smc;
+		export PUB_PSQL_ADMIN_USER="kirby"
+		export PUB_PSQL_ADMIN_ROLE="uboonedaq_admin"
+		export PUB_PSQL_ADMIN_PASS="kirbyargon!"
+		export PUB_PSQL_READER_USER="kirby"
+		export PUB_PSQL_READER_ROLE="uboonedaq_admin"
+		export PUB_PSQL_READER_PASS="kirbyargon!"
+		export PUB_PSQL_WRITER_USER="kirby"
+		export PUB_PSQL_WRITER_ROLE="uboonedaq_admin"
+		export PUB_PSQL_WRITER_PASS="kirbyargon!"
 		setup uboonecode v04_26_00 -q prof:e7;
 	        setup sam_web_client;
 		setup ifdhc v1_8_2 -q e7:p279:prof;
