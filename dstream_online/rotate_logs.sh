@@ -7,7 +7,7 @@ case `uname -n` in
     (*)
 	echo Script must be run on ubdaq-prod-near1!!!
 	echo Exiting with extreme prejudice.
-	return 1
+	exit 1
 	;;
 esac
 
@@ -18,7 +18,7 @@ case `whoami` in
     (*)
         echo This should only be used for uboonepro account!!!
 	echo Exiting with extreme prejudice.
-	return 1
+	exit 1
 	;;
 esac
 

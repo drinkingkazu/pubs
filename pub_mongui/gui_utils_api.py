@@ -57,6 +57,9 @@ class GuiUtilsAPI():
         self.queried_proj_dict = self.dbi.list_status()
         self.projects = self.dbi.list_projects()
         for servername in self.relevant_daemons:
+          LEN = len(self.dbi.list_daemon_log(servername)) # ADDED
+          if (LEN == 0): # ADDED 
+              continue # ADDED
           self.daemon_last_logtimes[servername] = self.dbi.list_daemon_log(servername)[-1]._logtime
           self.daemon_is_enabled[servername] = self.dbi.daemon_info(servername)._enable
         self.last_updated = datetime.datetime.today().strftime("%A %B %d, %Y %I:%M%p")

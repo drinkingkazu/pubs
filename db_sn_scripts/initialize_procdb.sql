@@ -1,4 +1,4 @@
---SET ROLE uboonedaq_admin;
+SET ROLE uboonedaq_admin;
 --SET ROLE uboone_admin;
 SELECT RemoveProcessDB();
 DROP TABLE IF EXISTS TestRun;

@@ -94,15 +94,14 @@ class construct_filename( ds_project_base ):
 
             if run < self._min_run: break
 
-            # Counter decreases by 1
-            ctr -= 1
-
             # Report starting
             self.info('Filename: run=%d subrun=%d @ %s' % (run,
                                                            subrun,
                                                            time.strftime('%Y-%m-%d %H:%M:%S')))
             try:
                 self._data = file_map[(run,subrun)]
+                # Counter decreases by 1
+                ctr -= 1
             except KeyError:
                 self.info('Warning! (run,subrun)=(%d,%d) does not exist in file map (sz=%d)'%(run,
                                                                                               subrun,

@@ -1,7 +1,4 @@
---SET ROLE uboonedaq_admin;
---SET ROLE uboone_admin;
-
---CREATE EXTENSION HSTORE;
+SET ROLE uboonedaq_admin;
 
 ---------------------------------------------------------------------
 --/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/--

@@ -328,6 +328,7 @@ class monitor_snova( ds_project_base ):
         rundbWriter = ds_api.death_star(pubdb_conn_info.admin_info(),death_star)
 
 	for seb_ in sebs_v:
+            self.info("@seb=%s"%seb_)
             # ask a single seb for this runs subruns -- limit the return to 1e6 subruns
 	    seb_del = ""
 	    subruns = reader.get_subruns("%s_%s"%(self._fragment_prefix,seb_),run,1e6)
@@ -350,7 +351,9 @@ class monitor_snova( ds_project_base ):
 		fname = seb_status._data
 		
 		# filename returned was None, move onto next subrun
-		if fname is None: continue
+		if fname is None: 
+                    self.info("...no filename associated!")
+                    continue
 		
 		# add this filename to the deletion string
 		seb_del += str(fname + " ")
