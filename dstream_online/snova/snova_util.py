@@ -1,5 +1,6 @@
 import os, sys
 import subprocess
+import signal, inspect
 from itertools import izip
 
 #
@@ -102,7 +103,7 @@ def query_creation_times(data_path,file_info,sebname):
     return file_info
 
 #
-# query checksum on remote serve
+# query checksum on remote server
 #
 def query_checksum(who,where,what):
     cmd = str("")
@@ -120,4 +121,16 @@ def insert_sebname(in_file_name,seb):
     out_file_name = "-".join(out_file_name)
 
     return out_file_name
+
+
+#
+# what happens when CPU limit kills a script, let the logfile know
+#
+def sigterm_handler(signum,frame):
+    print "Potential T status found"
+    print "Signal handler called with signal=",signum
+    print "PUBS project will die now."
+    sys.exit(15)
+
+signal.signal(signal.SIGTERM, sigterm_handler)
 
