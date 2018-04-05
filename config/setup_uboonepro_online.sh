@@ -80,6 +80,11 @@ case `uname -n` in
 	        setup uboonedaq_datatypes v6_19_00c -q e7:prof;
                 export PUB_DAEMON_LOG_MODULE=dstream_online.smc_logger;
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.smc_handler;
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
                 ;;
             (ubdaq-prod-ws02*)
 	        export PUB_PSQL_READER_DB=procdb_sn
@@ -104,6 +109,11 @@ case `uname -n` in
 	        setup uboonedaq_datatypes v6_19_00c -q e7:prof;
                 export PUB_DAEMON_LOG_MODULE=dstream_online.ws02_logger;
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.ws02_handler;
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
                 ;;
             (ubdaq-prod-evb*)
 	        setup uboonecode v04_26_00 -q prof:e7;
@@ -114,6 +124,11 @@ case `uname -n` in
                 export PUB_DAEMON_LOG_MODULE=dstream_online.evb_logger;
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.evb_handler;
 		export KRB5CCNAME=FILE:/tmp/krb5cc_uboonepro_evb;
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
                 ;;
             (ubdaq-prod-near1*)
                 #
@@ -129,9 +144,13 @@ case `uname -n` in
 		setup pyqtgraph;
                 export PUB_DAEMON_LOG_MODULE=dstream_online.near1_logger;
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.near1_handler;
-
 		# for password log file
 		export FW_SEARCH_PATH=/home/uboonepro/.sql_access/:$FW_SEARCH_PATH
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
 		;;
 	esac
 	;;

@@ -90,7 +90,8 @@ class CustomProjectSubwindow(QtGui.QGraphicsView):
             #ignore good statuses
             if self.myguiutil.isGoodStatus(status): continue
             elif self.myguiutil.isErrorStatus(status): mycolor = 'r'
-            elif self.myguiutil.isIntermediateStatus(status): mycolor = [255, 140, 0] #dark orange
+            elif self.myguiutil.isIntermediateStatus(status): mycolor = [0, 206, 209] #cyan
+            #elif self.myguiutil.isIntermediateStatus(status): mycolor = [255, 140, 0] #dark orange
             data = np.array(values)
             xvals = np.array(range(0,len(data)*self.update_period, self.update_period))
             #add multiple plots by just calling self.history_plot.plot() a bunch of times

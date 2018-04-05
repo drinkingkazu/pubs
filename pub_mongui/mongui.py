@@ -10,6 +10,7 @@ from custom_qgraphicsview  import CustomQGraphicsView
 from custom_bar_class import ProgressBarItem
 from gui_utils_api import GuiUtilsAPI, GuiUtils
 import datetime
+import epics
 
 # catch ctrl+C to terminate the program
 import signal
@@ -245,6 +246,20 @@ for iprojname in projectnames:
     mysubtext.setPen(outline_pen)
     mysubtext.setZValue(2.0)
     mysubtext.setPos(ix,iy+proj_dict[iprojname].getHeight())
+    ngood, ninter, nerr = gdbi.getScaledNGoodInterError(iprojname,use_relative=0)
+    if iprojname.endswith("_evb"):
+        epics_iprojname_queued = "uB_DataMgmt_PUBS_evb/"+iprojname[5:-4]+"_queued"
+        epics_iprojname_errors = "uB_DataMgmt_PUBS_evb/"+iprojname[5:-4]+"_errors"
+    if iprojname.endswith("_near1"):
+        epics_iprojname_queued = "uB_DataMgmt_PUBS_near1/"+iprojname[5:-6]+"_queued"
+        epics_iprojname_errors = "uB_DataMgmt_PUBS_near1/"+iprojname[5:-6]+"_errors"
+    #print "%s had %i queued" %(epics_iprojname_queued, ninter )
+    #print "%s had %i errors" %(epics_iprojname_errors, nerr )
+    if epics.caput( epics_iprojname_queued, ninter ) is None:
+        print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write on %s"%epics_iprojname_queued
+    if epics.caput( epics_iprojname_errors, nerr) is None:
+        print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write on %s"%epics_iprojname_errors
+
     ngood, ninter, nerr = gdbi.getScaledNGoodInterError(iprojname,use_relative=relative_counter_checkbox.isChecked())
     mysubtext.setText('%d Complete : %d Queued : %d Error'%(ngood, ninter, nerr))
     # mysubtext.setDefaultTextColor(QtGui.QColor('white'))
@@ -316,7 +331,7 @@ mytext = QtGui.QGraphicsSimpleTextItem()
 mytext.setBrush(text_brush)
 mytext.setPen(outline_pen)
 mytext.setPos(scene_xmin+0.75*scene_width,scene_height*0.88)
-mytext.setText('Legend:\nGreen: Fully completed\nOrange: Queued status.\nRed: Error status.\nGray: Project Disabled')
+mytext.setText('Legend:\nGreen: Fully completed\nBlue: Queued status.\nRed: Error status.\nGray: Project Disabled')
 # mytext.setDefaultTextColor(QtGui.QColor('white'))
 myfont = QtGui.QFont()
 myfont.setPointSize(12)
@@ -410,6 +425,21 @@ def update_gui():
         proj_dict[iprojname].appendHistory(gdbi.getNRunSubruns(iprojname))
 
         #Below the pie chart, update the written number of run/subruns
+        ngood, ninter, nerr = gdbi.getScaledNGoodInterError(iprojname,use_relative=0)
+        if iprojname.endswith("_evb"):
+            epics_iprojname_queued = "uB_DataMgmt_PUBS_evb/"+iprojname[5:-4]+"_queued"
+            epics_iprojname_errors = "uB_DataMgmt_PUBS_evb/"+iprojname[5:-4]+"_errors"
+        if iprojname.endswith("_near1"):
+            epics_iprojname_queued = "uB_DataMgmt_PUBS_near1/"+iprojname[5:-6]+"_queued"
+            epics_iprojname_errors = "uB_DataMgmt_PUBS_near1/"+iprojname[5:-6]+"_errors"
+        #print "%s had %i queued" %(epics_iprojname_queued, ninter )
+        #print "%s had %i errors" %(epics_iprojname_errors, nerr )
+        if epics.caput( epics_iprojname_queued, ninter ) is None:
+            print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write on %s"%epics_iprojname_queued
+        if epics.caput( epics_iprojname_errors, nerr) is None:
+            print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write on %s"%epics_iprojname_errors
+        #epics.caput("uB_DataMgmt_PUBS/last_updated", time.time())
+
         ngood, ninter, nerr = gdbi.getScaledNGoodInterError(iprojname,use_relative=relative_counter_checkbox.isChecked())#proj_dict[iprojname].getHistory())    
         projsubtext_dict[iprojname].setText('%d Complete : %d Queued : %d Error'%(ngood, ninter, nerr))
         #If in relative mode and more than 100 statuses for a project are error, throw a warning

@@ -13,7 +13,7 @@ import datetime
 import time
 import copy
 import math
-
+import epics
 import threading
 
 class GuiUtilsAPI():
@@ -195,7 +195,7 @@ class GuiUtilsAPI():
 
 
     # slices.append( (fraction_good,'g') )
-    slices.append( (fraction_inter,[255,140,0]) )
+    slices.append( (fraction_inter,[0,206,209]) )
     slices.append( (fraction_err,'r') )
 
     # for x in statuses:
@@ -271,6 +271,22 @@ class GuiUtilsAPI():
     #starttime = datetime.datetime.today()# - datetime.timedelta(seconds=max_daemon_log_lag)
     time_since_log_update = self.my_utils.getTimeSinceInSeconds(last_logtime)
     is_running = True if time_since_log_update < max_daemon_log_lag else False
+    epics_var_name=""
+    if "ws02" in servername:
+        epics_var_name="uB_DataMgmt_PUBS_ws02/daemon_"
+    if "evb" in servername:
+        epics_var_name="uB_DataMgmt_PUBS_evb/daemon_"
+    if "near1" in servername:
+        epics_var_name="uB_DataMgmt_PUBS_near1/daemon_"
+    #print('The epics_var_name is: {0} and the daemon is enabled: {1:d} and running: {2:d}'.format(epics_var_name+"enabled", is_enabled, is_running))
+    if "uB_DataMgmt_PUBS" in epics_var_name:
+        if epics.caput(epics_var_name+"enabled",is_enabled) is None:
+            print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write on %s"%epics_var_name+"enabled"
+        if epics.caput(epics_var_name+"running",is_running) is None:
+            print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write on %s"%epics_var_name+"running"
+        if epics.caput("uB_DataMgmt_PUBS/last_updated", time.time()) is None:
+            print "ERROR TRYING TO REGISTER DAEMONS STATUS INTO EPICS!!!! Failed to write uB_DataMgmt_PUBS/last_updated at "+ str(time.time())
+  
     return (is_enabled, is_running)
   
   def genDaemonTextAndWarnings(self):

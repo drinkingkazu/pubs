@@ -106,6 +106,11 @@ case `uname -n` in
 		setup postgresql v9_3_6 -q p279
 		export PUB_DAEMON_LOG_MODULE=dstream_online.smc_logger
 		export PUB_DAEMON_HANDLER_MODULE=dstream_online.smc_handler
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
 		;;
 	    (ubdaq-prod-evb*)
 	        setup git
@@ -114,6 +119,11 @@ case `uname -n` in
 	        setup sam_web_client
 		export PUB_DAEMON_LOG_MODULE=dstream_online.evb_logger
 		export PUB_DAEMON_HANDLER_MODULE=dstream_online.evb_handler
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
 		;;
 	    (ubdaq-prod-near1*)
 	        #
@@ -127,6 +137,11 @@ case `uname -n` in
 		setup uboonecode v04_22_00 -q prof:e7
                 export PUB_DAEMON_LOG_MODULE=dstream_online.near1_logger
                 export PUB_DAEMON_HANDLER_MODULE=dstream_online.near1_handler
+		source /uboonenew/setup
+		setup epics v3_14_12_ub
+		setup epics_css v3_3_10a_nsls2
+		export EPICS_CA_ADDR_LIST=192.168.144.255
+		export EPICS_CA_AUTO_ADDR_LIST=NO
 		;;
 	esac
 	;;
